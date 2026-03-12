@@ -1,6 +1,6 @@
 -- WindUI Boreal
 -- Version: v0.0.1
--- BuildDate: 2026-02-23
+-- BuildDate: 2026-03-11
 -- Description: Roblox UI Library for scripts
 -- Repository: https://github.com/orialdev/WindUI-Boreal
 -- Discord: http://discord.gg/B3dEqP2EX6
@@ -2645,7 +2645,8 @@ function ae.Create(af,ag)
 local ah={
 UICorner=28,
 UIPadding=12,
-UIElements={}
+UIElements={},
+OutlineTransparency=0.75,
 }
 
 if af then ah.UIPadding=0 end
@@ -2701,6 +2702,15 @@ ImageTransparency=ag.."BackgroundTransparency",
 },
 ZIndex=9999,
 },{
+aa.NewRoundFrame(ah.UICorner,ad and ad.ModernLayout and"Glass-1"or"SquircleOutline",{
+Size=UDim2.new(1,0,1,0),
+BackgroundTransparency=1,
+ThemeTag={
+ImageColor3="Outline",
+},
+ImageTransparency=1,
+Name="Outline",
+}),
 
 
 
@@ -2727,6 +2737,7 @@ ah.UIElements.Main,
 
 
 })
+ah.UIElements.Outline=ah.UIElements.MainContainer.Outline
 
 function ah.Open(ai)
 if not af then
@@ -2741,6 +2752,9 @@ if not af then
 ac(ah.UIElements.FullScreen,0.1,{BackgroundTransparency=.3}):Play()
 end
 ac(ah.UIElements.MainContainer,0.1,{ImageTransparency=0}):Play()
+if ah.UIElements.Outline then
+ac(ah.UIElements.Outline,0.1,{ImageTransparency=ah.OutlineTransparency}):Play()
+end
 
 
 task.spawn(function()
@@ -2761,6 +2775,9 @@ end
 ah.UIElements.Main.Visible=false
 
 ac(ah.UIElements.MainContainer,0.1,{ImageTransparency=1}):Play()
+if ah.UIElements.Outline then
+ac(ah.UIElements.Outline,0.1,{ImageTransparency=1}):Play()
+end
 
 
 
@@ -13256,7 +13273,10 @@ ImageColor3="SectionBoxBackground",
 }or nil,
 ImageTransparency=not am.Box and 1 or nil,
 },{
-aa.NewRoundFrame(al.Window.ElementConfig.UICorner,al.Window.ModernLayout and"Glass-1"or"SquircleOutline",{
+aa.NewRoundFrame(
+al.Window.ElementConfig.UICorner,
+al.Window.ModernLayout and"Glass-1"or"SquircleOutline",
+{
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,1,0),
 ThemeTag={
@@ -13265,7 +13285,8 @@ ImageColor3="SectionBoxBorder",
 },
 Visible=am.Box and am.BoxBorder,
 Name="Outline",
-}),
+}
+),
 ad("TextButton",{
 Name="Top",
 Size=UDim2.new(1,0,0,am.HeaderSize),
@@ -13862,7 +13883,7 @@ ImageColor3="TabBackground",
 ImageTransparency=1,
 Parent=am.UIElements.TabsScroll,
 },{
-aa.NewRoundFrame(math.max(al.Window.ElementConfig.UICorner-2,6),al.Window.ModernLayout and"Glass-1.4"or"SquircleOutline",{
+aa.NewRoundFrame(math.max(al.Window.ElementConfig.UICorner-2,6),"Glass-1.4",{
 Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
 ThemeTag={
