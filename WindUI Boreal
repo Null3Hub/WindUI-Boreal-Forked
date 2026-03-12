@@ -12661,7 +12661,7 @@ ImageColor3="SectionBoxBackground",
 }or nil,
 ImageTransparency=not ak.Box and 1 or nil,
 },{
-aa.NewRoundFrame(ai.Window.ElementConfig.UICorner,ai.Window.ModernLayout and"Glass-1"or"SquircleOutline",{
+aa.NewRoundFrame(ai.Window.ElementConfig.UICorner,"Glass-1",{
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,1,0),
 ThemeTag={
@@ -13275,7 +13275,7 @@ ImageTransparency=not am.Box and 1 or nil,
 },{
 aa.NewRoundFrame(
 al.Window.ElementConfig.UICorner,
-al.Window.ModernLayout and"Glass-1"or"SquircleOutline",
+"Glass-1",
 {
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,1,0),
