@@ -89,7 +89,7 @@ Window:BindShortcut("F5", function()
 end)
 
 Window:Tag({
-    Title = "v" .. tostring(WindUI.Version or "0.0.0"),
+    Title = "v0.0.1",
     Color = Color3.fromRGB(49, 93, 255),
     Icon = "badge-check"
 })
