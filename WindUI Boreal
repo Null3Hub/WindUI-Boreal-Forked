@@ -845,10 +845,10 @@ x[z]=A
 end
 
 for z,A in next,u or{}do
-if z~="ThemeTag"then
+if z~="ThemeTag"and A~=nil then
 x[z]=A
 end
-if p.Localization and p.Localization.Enabled and z=="Text"then
+if p.Localization and p.Localization.Enabled and z=="Text"and type(A)=="string"then
 local B=string.match(A,"^"..p.Localization.Prefix.."(.+)")
 if B then
 local C=#p.LocalizationObjects+1
@@ -900,7 +900,7 @@ ThemeTag=v.ThemeTag and v.ThemeTag
 },x)
 
 for C,F in pairs(v or{})do
-if C~="ThemeTag"then
+if C~="ThemeTag"and F~=nil then
 B[C]=F
 end
 end
@@ -4397,12 +4397,73 @@ local ab=a.c()
 local ac=ab.New
 local ad=ab.Tween
 
+local function ResolveColor(ae)
+if typeof(ae)=="Color3"then
+return ae
+end
+
+if typeof(ae)=="table"and ae.Color and ae.Transparency then
+return ae
+end
+
+if typeof(ae)~="string"then
+return nil
+end
+
+if string.sub(ae,1,1)=="#"then
+return Color3.fromHex(ae)
+end
+
+if ab.Colors[ae]then
+return Color3.fromHex(ab.Colors[ae])
+end
+
+local af=ab.GetThemeProperty(ae,ab.Theme)
+if typeof(af)=="Color3"then
+return af
+end
+
+if typeof(af)=="table"and af.Color and af.Transparency then
+return af
+end
+
+return nil
+end
+
+local function ResolveTextColor(ae)
+if typeof(ae)=="Color3"then
+return ab.GetTextColorForHSB(ae)
+end
+
+if typeof(ae)=="table"and ae.Color and ae.Color.Keypoints then
+return ab.GetTextColorForHSB(ab.GetAverageColor(ae))
+end
+
+return nil
+end
+
+local function ApplyGradient(ae,af)
+if not(ae and typeof(af)=="table"and af.Color and af.Transparency)then
+return nil
+end
+
+local ag=ae:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{
+Parent=ae,
+})
+
+for ah,ai in next,af do
+ag[ah]=ai
+end
+
+return ag
+end
+
 
 function aa.New(ae,af,ag)
 local ah={
 Title=af.Title or"Tag",
 Icon=af.Icon,
-Color=af.Color or Color3.fromHex"#315dff",
+Color=ResolveColor(af.Color)or Color3.fromHex"#315dff",
 Radius=af.Radius or 999,
 Border=af.Border or false,
 
@@ -4425,7 +4486,10 @@ false
 )
 
 ai.Size=UDim2.new(0,ah.IconSize,0,ah.IconSize)
-ai.ImageLabel.ImageColor3=typeof(ah.Color)=="Color3"and ab.GetTextColorForHSB(ah.Color)or nil
+local aj=ResolveTextColor(ah.Color)
+if aj then
+ai.ImageLabel.ImageColor3=aj
+end
 end
 
 local aj=ac("TextLabel",{
@@ -4434,21 +4498,25 @@ AutomaticSize="XY",
 TextSize=ah.TextSize,
 FontFace=Font.new(ab.Font,Enum.FontWeight.SemiBold),
 Text=ah.Title,
-TextColor3=typeof(ah.Color)=="Color3"and ab.GetTextColorForHSB(ah.Color)or nil,
+TextColor3=ResolveTextColor(ah.Color),
+ThemeTag=not ResolveTextColor(ah.Color)and{
+TextColor3="Text",
+}or nil,
 })
 
 local ak
 
 if typeof(ah.Color)=="table"then
-
 ak=ac"UIGradient"
 for al,am in next,ah.Color do
 ak[al]=am
 end
-
-aj.TextColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+local al=ResolveTextColor(ah.Color)
+if al then
+aj.TextColor3=al
 if ai then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+ai.ImageLabel.ImageColor3=al
+end
 end
 end
 
@@ -4466,7 +4534,9 @@ Size=UDim2.new(1,0,1,0),
 ThemeTag={
 ImageColor3="White",
 },
-ImageTransparency=.75
+ImageTransparency=.75,
+Visible=ah.Border,
+Name="Outline",
 }),
 ac("Frame",{
 Size=UDim2.new(0,0,1,0),
@@ -4497,22 +4567,39 @@ return ah
 end
 
 function ah.SetColor(am,an)
-ah.Color=an
-if typeof(an)=="table"then
-local ao=ab.GetAverageColor(an)
-ad(aj,.06,{TextColor3=ab.GetTextColorForHSB(ao)}):Play()
-local ap=al:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{Parent=al})
-for aq,ar in next,an do ap[aq]=ar end
+local ao=ResolveColor(an)
+if not ao then
+return ah
+end
+
+ah.Color=ao
+
+if typeof(ao)=="table"then
+local ap=ResolveTextColor(ao)
+if ap then
+ad(aj,.06,{TextColor3=ap}):Play()
+end
+
+local aq=ApplyGradient(al,ao)
+ak=aq
 ad(al,.06,{ImageColor3=Color3.new(1,1,1)}):Play()
 else
 if ak then
 ak:Destroy()
+ak=nil
 end
-ad(aj,.06,{TextColor3=ab.GetTextColorForHSB(an)}):Play()
+
+local ap=ResolveTextColor(ao)
+if ap then
+ad(aj,.06,{TextColor3=ap}):Play()
+end
 if ai then
-ad(ai.ImageLabel,.06,{ImageColor3=ab.GetTextColorForHSB(an)}):Play()
+local aq=ResolveTextColor(ao)
+if aq then
+ad(ai.ImageLabel,.06,{ImageColor3=aq}):Play()
 end
-ad(al,.06,{ImageColor3=an}):Play()
+end
+ad(al,.06,{ImageColor3=ao}):Play()
 end
 
 return ah
@@ -4532,12 +4619,11 @@ false
 )
 
 ai.Size=UDim2.new(0,ah.IconSize,0,ah.IconSize)
-ai.Parent=al
+ai.Parent=al.Content
 
-if typeof(ah.Color)=="Color3"then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ah.Color)
-elseif typeof(ah.Color)=="table"then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+local ao=ResolveTextColor(ah.Color)
+if ao then
+ai.ImageLabel.ImageColor3=ao
 end
 else
 if ai then
@@ -4545,6 +4631,12 @@ ai:Destroy()
 ai=nil
 end
 end
+return ah
+end
+
+function ah.SetBorder(am,an)
+ah.Border=an==true
+al.Outline.Visible=ah.Border
 return ah
 end
 
@@ -4558,6 +4650,7 @@ end
 
 
 return aa end function a.z():typeof(__modImpl())local aa=a.cache.z if not aa then aa={c=__modImpl()}a.cache.z=aa end return aa.c end end do local function __modImpl()
+
 local aa={}
 
 local ab=a.c()
@@ -6388,6 +6481,97 @@ end
 
 return ac end function a.F():typeof(__modImpl())local aa=a.cache.F if not aa then aa={c=__modImpl()}a.cache.F=aa end return aa.c end end do local function __modImpl()
 
+local aa=a.c()
+local ab=aa.New
+
+local ac=a.v().New
+
+local ad={}
+
+function ad.New(ae,af)
+local ag={
+__type="Label",
+Text=tostring(af.Text or af.Title or"Label"),
+Icon=af.Icon,
+Placeholder=af.Placeholder==true,
+Radius=typeof(af.Radius)=="number"and math.max(math.floor(af.Radius),8)
+or math.max((af.Window and af.Window.ElementConfig and af.Window.ElementConfig.UICorner or 12)-2,8),
+Height=typeof(af.Height)=="number"and math.max(math.floor(af.Height),30)or 42,
+Padding=typeof(af.Padding)=="number"and math.max(math.floor(af.Padding),0)or 0,
+UIElements={},
+}
+
+local ah=ab("Frame",{
+Parent=af.Parent,
+Size=UDim2.new(1,0,0,ag.Height+(ag.Padding*2)),
+BackgroundTransparency=1,
+})
+
+local ai=ab("Frame",{
+Parent=ah,
+Size=UDim2.new(1,-(ag.Padding*2),0,ag.Height),
+Position=UDim2.new(0,ag.Padding,0,ag.Padding),
+BackgroundTransparency=1,
+})
+
+local aj
+
+local function Render()
+if aj then
+aj:Destroy()
+end
+
+aj=ac(
+ag.Text,
+ag.Icon,
+ai,
+ag.Placeholder,
+ag.Radius
+)
+aj.Size=UDim2.new(1,0,0,ag.Height)
+ag.UIElements.Label=aj
+end
+
+ag.ElementFrame=ah
+ag.UIElements={
+Holder=ah,
+Content=ai,
+}
+
+function ag.Set(ak,al)
+ag.Text=tostring(al or"")
+Render()
+return ag
+end
+
+function ag.SetIcon(ak,al)
+ag.Icon=al
+Render()
+return ag
+end
+
+function ag.SetPlaceholder(ak,al)
+ag.Placeholder=al==true
+Render()
+return ag
+end
+
+function ag.SetVisible(ak,al)
+ah.Visible=al~=false
+return ag
+end
+
+function ag.Destroy(ak)
+ah:Destroy()
+end
+
+Render()
+
+return ag.__type,ag
+end
+
+return ad end function a.G():typeof(__modImpl())local aa=a.cache.G if not aa then aa={c=__modImpl()}a.cache.G=aa end return aa.c end end do local function __modImpl()
+
 local aa=a.c()local ab=
 aa.New
 
@@ -6488,7 +6672,7 @@ end)
 return af.__type,af
 end
 
-return ac end function a.G():typeof(__modImpl())local aa=a.cache.G if not aa then aa={c=__modImpl()}a.cache.G=aa end return aa.c end end do local function __modImpl()
+return ac end function a.H():typeof(__modImpl())local aa=a.cache.H if not aa then aa={c=__modImpl()}a.cache.H=aa end return aa.c end end do local function __modImpl()
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
 local ab=aa(game:GetService"UserInputService")
@@ -6719,7 +6903,7 @@ end)
 return ai.__type,ai
 end
 
-return af end function a.H():typeof(__modImpl())local aa=a.cache.H if not aa then aa={c=__modImpl()}a.cache.H=aa end return aa.c end end do local function __modImpl()
+return af end function a.I():typeof(__modImpl())local aa=a.cache.I if not aa then aa={c=__modImpl()}a.cache.I=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -6998,7 +7182,7 @@ end
 return ao,al
 end
 
-return aa end function a.I():typeof(__modImpl())local aa=a.cache.I if not aa then aa={c=__modImpl()}a.cache.I=aa end return aa.c end end do local function __modImpl()
+return aa end function a.J():typeof(__modImpl())local aa=a.cache.J if not aa then aa={c=__modImpl()}a.cache.J=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -7099,11 +7283,11 @@ return an,ak
 end
 
 
-return aa end function a.J():typeof(__modImpl())local aa=a.cache.J if not aa then aa={c=__modImpl()}a.cache.J=aa end return aa.c end end do local function __modImpl()
+return aa end function a.K():typeof(__modImpl())local aa=a.cache.K if not aa then aa={c=__modImpl()}a.cache.K=aa end return aa.c end end do local function __modImpl()
 local aa=a.c()
 
-local ab=a.I().New
-local ac=a.J().New
+local ab=a.J().New
+local ac=a.K().New
 
 local ad={}
 
@@ -7192,7 +7376,23 @@ end)
 return ag.__type,ag
 end
 
-return ad end function a.K():typeof(__modImpl())local aa=a.cache.K if not aa then aa={c=__modImpl()}a.cache.K=aa end return aa.c end end do local function __modImpl()
+return ad end function a.L():typeof(__modImpl())local aa=a.cache.L if not aa then aa={c=__modImpl()}a.cache.L=aa end return aa.c end end do local function __modImpl()
+
+local aa=a.L()
+
+local ab={}
+
+function ab.New(ac,ad)
+local ae=table.clone(ad)
+ae.Type="Checkbox"local
+
+af, ag=aa:New(ae)
+ag.ElementVariant="Checkbox"
+
+return"Checkbox",ag
+end
+
+return ab end function a.M():typeof(__modImpl())local aa=a.cache.M if not aa then aa={c=__modImpl()}a.cache.M=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -7201,8 +7401,8 @@ local ab=aa(game:GetService"UserInputService")
 local ac=a.c()
 local ad=ac.New
 
-local ae=a.I().New
-local af=a.J().New
+local ae=a.J().New
+local af=a.K().New
 local ag=a.v().New
 
 local ah={}
@@ -7412,7 +7612,7 @@ end)
 return ak.__type,ak
 end
 
-return ah end function a.L():typeof(__modImpl())local aa=a.cache.L if not aa then aa={c=__modImpl()}a.cache.L=aa end return aa.c end end do local function __modImpl()
+return ah end function a.N():typeof(__modImpl())local aa=a.cache.N if not aa then aa={c=__modImpl()}a.cache.N=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -7789,7 +7989,7 @@ end)
 return ak.__type,ak
 end
 
-return ag end function a.M():typeof(__modImpl())local aa=a.cache.M if not aa then aa={c=__modImpl()}a.cache.M=aa end return aa.c end end do local function __modImpl()
+return ag end function a.O():typeof(__modImpl())local aa=a.cache.O if not aa then aa={c=__modImpl()}a.cache.O=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -8255,7 +8455,7 @@ end
 return ao.__type,ao
 end
 
-return ag end function a.N():typeof(__modImpl())local aa=a.cache.N if not aa then aa={c=__modImpl()}a.cache.N=aa end return aa.c end end do local function __modImpl()
+return ag end function a.P():typeof(__modImpl())local aa=a.cache.P if not aa then aa={c=__modImpl()}a.cache.P=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -8417,7 +8617,7 @@ end)
 return aj.__type,aj
 end
 
-return af end function a.O():typeof(__modImpl())local aa=a.cache.O if not aa then aa={c=__modImpl()}a.cache.O=aa end return aa.c end end do local function __modImpl()
+return af end function a.Q():typeof(__modImpl())local aa=a.cache.Q if not aa then aa={c=__modImpl()}a.cache.Q=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ab=aa.New local ac=
@@ -8528,7 +8728,7 @@ end
 return ai.__type,ai
 end
 
-return ad end function a.P():typeof(__modImpl())local aa=a.cache.P if not aa then aa={c=__modImpl()}a.cache.P=aa end return aa.c end end do local function __modImpl()
+return ad end function a.R():typeof(__modImpl())local aa=a.cache.R if not aa then aa={c=__modImpl()}a.cache.R=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -9194,7 +9394,7 @@ UpdatePosition
 return aq
 end
 
-return aa end function a.Q():typeof(__modImpl())local aa=a.cache.Q if not aa then aa={c=__modImpl()}a.cache.Q=aa end return aa.c end end do local function __modImpl()
+return aa end function a.S():typeof(__modImpl())local aa=a.cache.S if not aa then aa={c=__modImpl()}a.cache.S=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -9210,7 +9410,7 @@ af.Tween
 
 local ai=a.v().New local aj=a.m()
 .New
-local ak=a.Q().New local al=
+local ak=a.S().New local al=
 
 workspace.CurrentCamera
 
@@ -9600,7 +9800,7 @@ end
 return ap.__type,ap
 end
 
-return am end function a.R():typeof(__modImpl())local aa=a.cache.R if not aa then aa={c=__modImpl()}a.cache.R=aa end return aa.c end end do local function __modImpl()
+return am end function a.T():typeof(__modImpl())local aa=a.cache.T if not aa then aa={c=__modImpl()}a.cache.T=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -10257,7 +10457,7 @@ end
 return ak.__type,ak
 end
 
-return af end function a.S():typeof(__modImpl())local aa=a.cache.S if not aa then aa={c=__modImpl()}a.cache.S=aa end return aa.c end end do local function __modImpl()
+return af end function a.U():typeof(__modImpl())local aa=a.cache.U if not aa then aa={c=__modImpl()}a.cache.U=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -10430,14 +10630,14 @@ end
 return table.concat(aq)
 end
 
-return aa end function a.T():typeof(__modImpl())local aa=a.cache.T if not aa then aa={c=__modImpl()}a.cache.T=aa end return aa.c end end do local function __modImpl()
+return aa end function a.V():typeof(__modImpl())local aa=a.cache.V if not aa then aa={c=__modImpl()}a.cache.V=aa end return aa.c end end do local function __modImpl()
 local aa={}
 
 local ad=a.c()
 local ae=ad.New
 local af=ad.Tween
 
-local ag=a.T()
+local ag=a.V()
 
 function aa.New(ai,ak,al,am,an)
 local ao={
@@ -10640,12 +10840,12 @@ return ao
 end
 
 
-return aa end function a.U():typeof(__modImpl())local aa=a.cache.U if not aa then aa={c=__modImpl()}a.cache.U=aa end return aa.c end end do local function __modImpl()
+return aa end function a.W():typeof(__modImpl())local aa=a.cache.W if not aa then aa={c=__modImpl()}a.cache.W=aa end return aa.c end end do local function __modImpl()
 local aa=a.c()local ad=
 aa.New
 
 
-local ae=a.U()
+local ae=a.W()
 
 local af={}
 
@@ -10712,7 +10912,7 @@ ak.ElementFrame=am.CodeFrame
 return ak.__type,ak
 end
 
-return af end function a.V():typeof(__modImpl())local aa=a.cache.V if not aa then aa={c=__modImpl()}a.cache.V=aa end return aa.c end end do local function __modImpl()
+return af end function a.X():typeof(__modImpl())local aa=a.cache.X if not aa then aa={c=__modImpl()}a.cache.X=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New local ae=
@@ -11437,7 +11637,7 @@ end)
 return at.__type,at
 end
 
-return aq end function a.W():typeof(__modImpl())local aa=a.cache.W if not aa then aa={c=__modImpl()}a.cache.W=aa end return aa.c end end do local function __modImpl()
+return aq end function a.Y():typeof(__modImpl())local aa=a.cache.Y if not aa then aa={c=__modImpl()}a.cache.Y=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -11791,7 +11991,7 @@ ao:Set(ao.Value,false,false)
 return ao.__type,ao
 end
 
-return af end function a.X():typeof(__modImpl())local aa=a.cache.X if not aa then aa={c=__modImpl()}a.cache.X=aa end return aa.c end end do local function __modImpl()
+return af end function a.Z():typeof(__modImpl())local aa=a.cache.Z if not aa then aa={c=__modImpl()}a.cache.Z=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -12109,7 +12309,509 @@ RenderRows()
 return am.__type,am
 end
 
-return ae end function a.Y():typeof(__modImpl())local aa=a.cache.Y if not aa then aa={c=__modImpl()}a.cache.Y=aa end return aa.c end end do local function __modImpl()
+return ae end function a._():typeof(__modImpl())local aa=a.cache._ if not aa then aa={c=__modImpl()}a.cache._=aa end return aa.c end end do local function __modImpl()
+
+local aa={}
+
+local ad=a.c()
+local ae=ad.New
+
+local af=a.l().New
+
+local function ResolveColor(ag)
+if typeof(ag)=="Color3"then
+return ag
+end
+
+if typeof(ag)~="string"then
+return nil
+end
+
+if string.sub(ag,1,1)=="#"then
+return Color3.fromHex(ag)
+end
+
+if ad.Colors[ag]then
+return Color3.fromHex(ad.Colors[ag])
+end
+
+local ai=ad.GetThemeProperty(ag,ad.Theme)
+if typeof(ai)=="Color3"then
+return ai
+end
+
+return nil
+end
+
+local function NormalizeButtons(ag)
+local ai={}
+if typeof(ag)~="table"then
+return ai
+end
+
+for ak,al in ipairs(ag)do
+if typeof(al)=="table"then
+ai[#ai+1]={
+Title=tostring(al.Title or al.Text or"Action"),
+Icon=al.Icon,
+Variant=al.Variant,
+Callback=al.Callback,
+}
+elseif al~=nil then
+ai[#ai+1]={
+Title=tostring(al),
+}
+end
+end
+
+return ai
+end
+
+function aa.New(ag)
+local ai={
+Title=tostring(ag.Title or"Notice"),
+Content=ag.Content~=nil and tostring(ag.Content)or"",
+Icon=ag.Icon,
+IconThemed=ag.IconThemed==true,
+Color=ResolveColor(ag.Color)
+or ad.GetThemeProperty("Primary",ad.Theme)
+or Color3.fromHex"#0091FF",
+Radius=typeof(ag.Radius)=="number"and math.max(math.floor(ag.Radius),8)
+or(ag.Window and ag.Window.ElementConfig and ag.Window.ElementConfig.UICorner or 14),
+Padding=typeof(ag.Padding)=="number"and math.max(math.floor(ag.Padding),10)or 14,
+AccentWidth=typeof(ag.AccentWidth)=="number"and math.max(math.floor(ag.AccentWidth),4)or 6,
+Buttons=NormalizeButtons(ag.Buttons),
+UIElements={},
+}
+
+local ak=ae("Frame",{
+Parent=ag.Parent,
+Size=UDim2.new(1,0,0,0),
+AutomaticSize="Y",
+BackgroundTransparency=1,
+})
+
+local al=ad.NewRoundFrame(ai.Radius,"Squircle",{
+Parent=ak,
+Size=UDim2.new(1,0,0,0),
+AutomaticSize="Y",
+ThemeTag={
+ImageColor3="SectionBoxBackground",
+ImageTransparency="SectionBoxBackgroundTransparency",
+},
+},{
+ad.NewRoundFrame(ai.Radius,"Glass-1",{
+Size=UDim2.new(1,0,1,0),
+ThemeTag={
+ImageColor3="SectionBoxBorder",
+ImageTransparency="SectionBoxBorderTransparency",
+},
+}),
+})
+
+local am=ad.NewRoundFrame(math.max(ai.Radius-6,6),"Squircle",{
+Parent=al,
+Size=UDim2.new(0,ai.AccentWidth,1,-(ai.Padding*2)),
+Position=UDim2.new(0,ai.Padding,0,ai.Padding),
+BackgroundTransparency=1,
+ImageColor3=ai.Color,
+})
+
+local an=ae("Frame",{
+Parent=al,
+Size=UDim2.new(1,-(ai.Padding*2+ai.AccentWidth+10),0,0),
+Position=UDim2.new(0,ai.Padding+ai.AccentWidth+10,0,0),
+AutomaticSize="Y",
+BackgroundTransparency=1,
+},{
+ae("UIPadding",{
+PaddingTop=UDim.new(0,ai.Padding),
+PaddingBottom=UDim.new(0,ai.Padding),
+}),
+ae("UIListLayout",{
+FillDirection="Vertical",
+Padding=UDim.new(0,10),
+VerticalAlignment="Top",
+}),
+})
+
+local ao=ae("Frame",{
+Parent=an,
+Size=UDim2.new(1,0,0,0),
+AutomaticSize="Y",
+BackgroundTransparency=1,
+},{
+ae("UIListLayout",{
+FillDirection="Horizontal",
+Padding=UDim.new(0,10),
+VerticalAlignment="Center",
+}),
+})
+
+local ap
+if ai.Icon then
+ap=ad.Image(
+ai.Icon,
+ai.Title..":"..tostring(ai.Icon),
+0,
+ag.Window,
+"Notice",
+true,
+ai.IconThemed,
+"Icon"
+)
+ap.Parent=ao
+ap.Size=UDim2.new(0,20,0,20)
+ap.LayoutOrder=-1
+end
+
+local aq=ae("Frame",{
+Parent=ao,
+Size=UDim2.new(1,ap and-30 or 0,0,0),
+AutomaticSize="Y",
+BackgroundTransparency=1,
+},{
+ae("UIListLayout",{
+FillDirection="Vertical",
+Padding=UDim.new(0,4),
+VerticalAlignment="Top",
+}),
+})
+
+local ar=ae("TextLabel",{
+Parent=aq,
+BackgroundTransparency=1,
+AutomaticSize="Y",
+Size=UDim2.new(1,0,0,0),
+Text=ai.Title,
+TextWrapped=true,
+TextXAlignment="Left",
+TextYAlignment="Top",
+FontFace=Font.new(ad.Font,Enum.FontWeight.SemiBold),
+TextSize=17,
+ThemeTag={
+TextColor3="Text",
+},
+})
+
+local as=ae("TextLabel",{
+Parent=aq,
+BackgroundTransparency=1,
+AutomaticSize="Y",
+Size=UDim2.new(1,0,0,0),
+Text=ai.Content,
+TextWrapped=true,
+TextXAlignment="Left",
+TextYAlignment="Top",
+FontFace=Font.new(ad.Font,Enum.FontWeight.Medium),
+TextSize=15,
+TextTransparency=0.25,
+Visible=ai.Content~="",
+ThemeTag={
+TextColor3="Text",
+},
+})
+
+local at=ae("Frame",{
+Parent=an,
+BackgroundTransparency=1,
+Size=UDim2.new(1,0,0,0),
+AutomaticSize="Y",
+Visible=false,
+},{
+ae("UIListLayout",{
+FillDirection="Horizontal",
+HorizontalAlignment="Left",
+VerticalAlignment="Center",
+Padding=UDim.new(0,8),
+}),
+})
+
+ai.UIElements={
+Holder=ak,
+Main=al,
+Accent=am,
+Content=an,
+Title=ar,
+Description=as,
+Buttons=at,
+Icon=ap,
+}
+
+local function RenderButtons()
+for au,av in ipairs(at:GetChildren())do
+if not av:IsA"UIListLayout"then
+av:Destroy()
+end
+end
+
+at.Visible=#ai.Buttons>0
+for au,av in ipairs(ai.Buttons)do
+local aw=af(
+av.Title,
+av.Icon,
+function()
+if av.Callback then
+ad.SafeCallback(av.Callback,ai)
+end
+end,
+av.Variant or"Secondary",
+at,
+nil,
+false,
+math.max(ai.Radius-4,10)
+)
+aw.Size=UDim2.new(0,0,0,34)
+end
+end
+
+function ai.SetTitle(au,av)
+ai.Title=tostring(av or"")
+ar.Text=ai.Title
+return ai
+end
+
+function ai.SetContent(au,av)
+ai.Content=av~=nil and tostring(av)or""
+as.Text=ai.Content
+as.Visible=ai.Content~=""
+return ai
+end
+
+function ai.SetColor(au,av)
+local aw=ResolveColor(av)
+if aw then
+ai.Color=aw
+am.ImageColor3=aw
+end
+return ai
+end
+
+function ai.SetButtons(au,av)
+ai.Buttons=NormalizeButtons(av)
+RenderButtons()
+return ai
+end
+
+function ai.SetVisible(au,av)
+ak.Visible=av~=false
+return ai
+end
+
+function ai.Destroy(au)
+ak:Destroy()
+end
+
+RenderButtons()
+
+return ak,ai
+end
+
+return aa end function a.aa():typeof(__modImpl())local aa=a.cache.aa if not aa then aa={c=__modImpl()}a.cache.aa=aa end return aa.c end end do local function __modImpl()
+
+local aa=a.aa()
+
+local ad={}
+
+function ad.New(ae,af)
+local ag,ai=aa.New{
+Parent=af.Parent,
+Window=af.Window,
+Title=af.Title or"Notice",
+Content=af.Content or af.Desc,
+Icon=af.Icon or"info",
+IconThemed=af.IconThemed,
+Color=af.Color,
+Radius=af.Radius or(af.Window and af.Window.ElementConfig and af.Window.ElementConfig.UICorner or 14),
+Buttons=af.Buttons,
+Padding=af.Padding,
+AccentWidth=af.AccentWidth,
+}
+
+ai.__type="Notice"
+ai.ElementFrame=ag
+
+return ai.__type,ai
+end
+
+return ad end function a.ab():typeof(__modImpl())local aa=a.cache.ab if not aa then aa={c=__modImpl()}a.cache.ab=aa end return aa.c end end do local function __modImpl()
+
+local aa={}
+
+local ad=a.c()
+local ae=ad.New
+local af=a.z()
+
+local function NormalizeItems(ag)
+local ai={}
+if typeof(ag)~="table"then
+return ai
+end
+
+for ak,al in ipairs(ag)do
+if typeof(al)=="table"then
+ai[#ai+1]={
+Title=tostring(al.Title or al.Text or al.Name or"Tag"),
+Icon=al.Icon,
+Color=al.Color,
+Border=al.Border,
+Radius=al.Radius,
+}
+elseif al~=nil then
+ai[#ai+1]={
+Title=tostring(al),
+}
+end
+end
+
+return ai
+end
+
+function aa.New(ag,ai,ak)
+local al={
+Items=NormalizeItems(ag),
+Gap=typeof(ak.Gap)=="number"and math.max(math.floor(ak.Gap),0)or 8,
+Padding=typeof(ak.Padding)=="number"and math.max(math.floor(ak.Padding),0)or 0,
+Height=typeof(ak.Height)=="number"and math.max(math.floor(ak.Height),26)or 26,
+Radius=ak.Radius,
+Border=ak.Border==true,
+Window=ak.Window,
+UIElements={},
+TagObjects={},
+}
+
+local am=ae("ScrollingFrame",{
+Parent=ai,
+Size=UDim2.new(1,0,0,al.Height+(al.Padding*2)),
+BackgroundTransparency=1,
+BorderSizePixel=0,
+ScrollBarThickness=0,
+CanvasSize=UDim2.new(0,0,0,0),
+AutomaticCanvasSize="X",
+ScrollingDirection="X",
+},{
+ae("UIPadding",{
+PaddingLeft=UDim.new(0,al.Padding),
+PaddingRight=UDim.new(0,al.Padding),
+PaddingTop=UDim.new(0,al.Padding),
+PaddingBottom=UDim.new(0,al.Padding),
+}),
+ae("UIListLayout",{
+FillDirection="Horizontal",
+VerticalAlignment="Center",
+Padding=UDim.new(0,al.Gap),
+}),
+})
+
+local an=am.UIListLayout
+local function UpdateCanvasSize()
+am.CanvasSize=UDim2.new(
+0,
+an.AbsoluteContentSize.X+(al.Padding*2),
+0,
+al.Height+(al.Padding*2)
+)
+end
+
+ad.AddSignal(an:GetPropertyChangedSignal"AbsoluteContentSize",UpdateCanvasSize)
+
+al.UIElements={
+Main=am,
+List=an,
+}
+
+local function ClearObjects()
+for ao,ap in ipairs(al.TagObjects)do
+if ap and ap.Destroy then
+ap:Destroy()
+end
+end
+al.TagObjects={}
+end
+
+local function Render()
+ClearObjects()
+
+for ao,ap in ipairs(al.Items)do
+local aq=af:New({
+Title=ap.Title,
+Icon=ap.Icon,
+Color=ap.Color,
+Border=ap.Border~=nil and ap.Border or al.Border,
+Radius=ap.Radius or al.Radius,
+Window=al.Window,
+},am)
+table.insert(al.TagObjects,aq)
+end
+
+UpdateCanvasSize()
+end
+
+function al.Set(ao,ap)
+al.Items=NormalizeItems(ap)
+Render()
+return al
+end
+
+function al.Add(ao,ap)
+al.Items[#al.Items+1]=NormalizeItems{ap}[1]or{
+Title=tostring(ap or"Tag"),
+}
+Render()
+return al
+end
+
+function al.Clear(ao)
+al.Items={}
+Render()
+return al
+end
+
+function al.GetItems(ao)
+return table.clone(al.Items)
+end
+
+function al.SetVisible(ao,ap)
+am.Visible=ap~=false
+return al
+end
+
+function al.Destroy(ao)
+am:Destroy()
+end
+
+Render()
+
+return am,al
+end
+
+return aa end function a.ac():typeof(__modImpl())local aa=a.cache.ac if not aa then aa={c=__modImpl()}a.cache.ac=aa end return aa.c end end do local function __modImpl()
+
+local aa=a.ac()
+
+local ad={}
+
+function ad.New(ae,af)
+local ag,ai=aa.New(
+af.Items or af.Tags or{},
+af.Parent,
+{
+Window=af.Window,
+Gap=af.Gap,
+Padding=af.Padding,
+Height=af.Height,
+Radius=af.Radius,
+Border=af.Border,
+}
+)
+
+ai.__type="Tags"
+ai.ElementFrame=ag
+
+return ai.__type,ai
+end
+
+return ad end function a.ad():typeof(__modImpl())local aa=a.cache.ad if not aa then aa={c=__modImpl()}a.cache.ad=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -12649,7 +13351,7 @@ end)
 return ak.__type,ak
 end
 
-return af end function a.Z():typeof(__modImpl())local aa=a.cache.Z if not aa then aa={c=__modImpl()}a.cache.Z=aa end return aa.c end end do local function __modImpl()
+return af end function a.ae():typeof(__modImpl())local aa=a.cache.ae if not aa then aa={c=__modImpl()}a.cache.ae=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -13772,7 +14474,7 @@ end)
 return am.__type,am
 end
 
-return ai end function a._():typeof(__modImpl())local aa=a.cache._ if not aa then aa={c=__modImpl()}a.cache._=aa end return aa.c end end do local function __modImpl()
+return ai end function a.af():typeof(__modImpl())local aa=a.cache.af if not aa then aa={c=__modImpl()}a.cache.af=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -13842,7 +14544,7 @@ end
 return ai.__type,ai
 end
 
-return ae end function a.aa():typeof(__modImpl())local aa=a.cache.aa if not aa then aa={c=__modImpl()}a.cache.aa=aa end return aa.c end end do local function __modImpl()
+return ae end function a.ag():typeof(__modImpl())local aa=a.cache.ag if not aa then aa={c=__modImpl()}a.cache.ag=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -13930,7 +14632,7 @@ ag.Tab
 return ai.__type,ai
 end
 
-return ae end function a.ab():typeof(__modImpl())local aa=a.cache.ab if not aa then aa={c=__modImpl()}a.cache.ab=aa end return aa.c end end do local function __modImpl()
+return ae end function a.ah():typeof(__modImpl())local aa=a.cache.ah if not aa then aa={c=__modImpl()}a.cache.ah=aa end return aa.c end end do local function __modImpl()
 
 local aa=a.c()
 local ad=aa.New
@@ -14092,32 +14794,36 @@ end
 return ai.__type,ai
 end
 
-return ae end function a.ac():typeof(__modImpl())local aa=a.cache.ac if not aa then aa={c=__modImpl()}a.cache.ac=aa end return aa.c end end do local function __modImpl()
+return ae end function a.ai():typeof(__modImpl())local aa=a.cache.ai if not aa then aa={c=__modImpl()}a.cache.ai=aa end return aa.c end end do local function __modImpl()
 
 return{
 Elements={
 Paragraph=a.F(),
-Button=a.G(),
-ButtonKeybind=a.H(),
-Toggle=a.K(),
-ToggleKeybind=a.L(),
-Slider=a.M(),
-Stepper=a.N(),
-Keybind=a.O(),
-Input=a.P(),
-Dropdown=a.R(),
-Segmented=a.S(),
-Code=a.V(),
-Colorpicker=a.W(),
-Progress=a.X(),
-Stats=a.Y(),
-Section=a.Z(),
-MultiSection=a._(),
+Label=a.G(),
+Button=a.H(),
+ButtonKeybind=a.I(),
+Toggle=a.L(),
+Checkbox=a.M(),
+ToggleKeybind=a.N(),
+Slider=a.O(),
+Stepper=a.P(),
+Keybind=a.Q(),
+Input=a.R(),
+Dropdown=a.T(),
+Segmented=a.U(),
+Code=a.X(),
+Colorpicker=a.Y(),
+Progress=a.Z(),
+Stats=a._(),
+Notice=a.ab(),
+Tags=a.ad(),
+Section=a.ae(),
+MultiSection=a.af(),
 Space=a.x(),
 Divider=a.y(),
-Image=a.aa(),
-Group=a.ab(),
-Video=a.ac(),
+Image=a.ag(),
+Group=a.ah(),
+Video=a.ai(),
 },
 Load=function(aa,ad,ae,af,ag,ai,ak,al,am)
 local function ResolveShapeFrame(an)
@@ -14302,7 +15008,7 @@ end
 end
 end,
 
-}end function a.ad():typeof(__modImpl())local aa=a.cache.ad if not aa then aa={c=__modImpl()}a.cache.ad=aa end return aa.c end end do local function __modImpl()
+}end function a.aj():typeof(__modImpl())local aa=a.cache.aj if not aa then aa={c=__modImpl()}a.cache.aj=aa end return aa.c end end do local function __modImpl()
 
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
@@ -14742,7 +15448,7 @@ end
 
 
 
-local aw=a.ad()
+local aw=a.aj()
 
 aw.Load(an,an.UIElements.ContainerFrame,aw.Elements,Window,WindUI,nil,aw,am)
 
@@ -14949,7 +15655,7 @@ end
 return nil
 end
 
-return ak end function a.ae():typeof(__modImpl())local aa=a.cache.ae if not aa then aa={c=__modImpl()}a.cache.ae=aa end return aa.c end end do local function __modImpl()
+return ak end function a.ak():typeof(__modImpl())local aa=a.cache.ak if not aa then aa={c=__modImpl()}a.cache.ak=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -14962,9 +15668,9 @@ local ag=a.v().New
 local ai=a.l().New
 local ak=a.x()
 local al=a.y()
-local am=a.ad()
+local am=a.aj()
 
-local an=a.ae()
+local an=a.ak()
 
 function aa.New(ao,ap,aq,ar,as,at)
 local au={
@@ -15296,7 +16002,7 @@ return au
 end
 
 
-return aa end function a.af():typeof(__modImpl())local aa=a.cache.af if not aa then aa={c=__modImpl()}a.cache.af=aa end return aa.c end end do local function __modImpl()
+return aa end function a.al():typeof(__modImpl())local aa=a.cache.al if not aa then aa={c=__modImpl()}a.cache.al=aa end return aa.c end end do local function __modImpl()
 
 return{
 Tab="table-of-contents",
@@ -15309,7 +16015,7 @@ Input="text-cursor-input",
 Dropdown="chevrons-up-down",
 Code="terminal",
 Colorpicker="palette",
-}end function a.ag():typeof(__modImpl())local aa=a.cache.ag if not aa then aa={c=__modImpl()}a.cache.ag=aa end return aa.c end end do local function __modImpl()
+}end function a.am():typeof(__modImpl())local aa=a.cache.am if not aa then aa={c=__modImpl()}a.cache.am=aa end return aa.c end end do local function __modImpl()
 local aa=(cloneref or clonereference or function(aa)
 return aa
 end)
@@ -15333,7 +16039,7 @@ Radius=22,
 Width=400,
 MaxHeight=380,
 
-Icons=a.ag(),
+Icons=a.am(),
 }
 
 local an=af("TextBox",{
@@ -15844,7 +16550,7 @@ end)
 return am
 end
 
-return ad end function a.ah():typeof(__modImpl())local aa=a.cache.ah if not aa then aa={c=__modImpl()}a.cache.ah=aa end return aa.c end end do local function __modImpl()
+return ad end function a.an():typeof(__modImpl())local aa=a.cache.an if not aa then aa={c=__modImpl()}a.cache.an=aa end return aa.c end end do local function __modImpl()
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
 local ad=aa(game:GetService"UserInputService")
@@ -17835,8 +18541,8 @@ av:EditOpenButton(av.OpenButton)
 end
 
 
-local C=a.ae()
-local F=a.af()
+local C=a.ak()
+local F=a.al()
 local G=C.Init(av,au.WindUI,au.WindUI.TooltipGui)
 G:OnChange(function(H)av.CurrentTab=H end)
 
@@ -18475,7 +19181,7 @@ end)
 
 
 if not av.HideSearchBar then
-local R=a.ah()
+local R=a.an()
 local S=false
 
 
@@ -18564,7 +19270,7 @@ end
 
 
 return av
-end end function a.ai():typeof(__modImpl())local aa=a.cache.ai if not aa then aa={c=__modImpl()}a.cache.ai=aa end return aa.c end end end
+end end function a.ao():typeof(__modImpl())local aa=a.cache.ao if not aa then aa={c=__modImpl()}a.cache.ao=aa end return aa.c end end end
 
 local aa={
 Window=nil,
@@ -18833,7 +19539,7 @@ aa:SetTheme"Dark"
 aa:SetLanguage(an.Language)
 
 function aa.CreateWindow(au,av)
-local aw=a.ai()
+local aw=a.ao()
 local ax=av.Folder or av.Title or"Temp"
 
 if not ai:IsStudio()and writefile then
