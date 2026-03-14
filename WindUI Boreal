@@ -1048,7 +1048,14 @@ return x
 end
 
 function p.Image(v,x,z,A,B,C,F,G)
-A=A or"Temp"
+if typeof(A)=="table"then
+A=A.Folder or A.Title
+end
+
+if typeof(A)~="string"or A==""then
+A="Temp"
+end
+
 x=p.SanitizeFilename(x)
 
 local H=r("Frame",{
@@ -1089,7 +1096,23 @@ Url=v,
 Method="GET",
 }.Body or{}
 
-if not d:IsStudio()and writefile then writefile(J,L)end
+if not d:IsStudio()and writefile then
+if makefolder and isfolder then
+if not isfolder"WindUI"then
+makefolder"WindUI"
+end
+
+local M="WindUI/"..A
+if not isfolder(M)then
+makefolder(M)
+end
+if not isfolder(M.."/assets")then
+makefolder(M.."/assets")
+end
+end
+
+writefile(J,L)
+end
 
 
 local M,N=pcall(getcustomasset,J)
@@ -1210,156 +1233,11 @@ end
 
 
 return b end function a.d():typeof(__modImpl())local b=a.cache.d if not b then b={c=__modImpl()}a.cache.d=b end return b.c end end do local function __modImpl()
-local b={}
-
-local d=a.c()
-local e=d.New
-local f=d.Tween
-
-
-function b.New(g,h,j,l,m,p,r,u)
-l=l or"Primary"
-local v=u or(not r and 10 or 99)
-local x
-if h and h~=""then
-x=e("ImageLabel",{
-Image=d.Icon(h)[1],
-ImageRectSize=d.Icon(h)[2].ImageRectSize,
-ImageRectOffset=d.Icon(h)[2].ImageRectPosition,
-Size=UDim2.new(0,21,0,21),
-BackgroundTransparency=1,
-ImageColor3=l=="White"and Color3.new(0,0,0)or nil,
-ImageTransparency=l=="White"and.4 or 0,
-ThemeTag={
-ImageColor3=l~="White"and"Icon"or nil,
-}
-})
-end
-
-local z=e("TextButton",{
-Size=UDim2.new(0,0,1,0),
-AutomaticSize="X",
-Parent=m,
-BackgroundTransparency=1
-},{
-d.NewRoundFrame(v,"Squircle",{
-ThemeTag={
-ImageColor3=l~="White"and"Button"or nil,
-},
-ImageColor3=l=="White"and Color3.new(1,1,1)or nil,
-Size=UDim2.new(1,0,1,0),
-Name="Squircle",
-ImageTransparency=l=="Primary"and 0 or l=="White"and 0 or 1
-}),
-
-d.NewRoundFrame(v,"Squircle",{
-
-
-
-ImageColor3=Color3.new(1,1,1),
-Size=UDim2.new(1,0,1,0),
-Name="Special",
-ImageTransparency=l=="Secondary"and 0.95 or 1
-}),
-
-d.NewRoundFrame(v,"Shadow-sm",{
-
-
-
-ImageColor3=Color3.new(0,0,0),
-Size=UDim2.new(1,3,1,3),
-AnchorPoint=Vector2.new(0.5,0.5),
-Position=UDim2.new(0.5,0,0.5,0),
-Name="Shadow",
-
-ImageTransparency=1,
-Visible=not r
-}),
-
-d.NewRoundFrame(v,not r and"Glass-1"or"Glass-0.7",{
-ThemeTag={
-ImageColor3="White",
-},
-Size=UDim2.new(1,0,1,0),
-
-ImageTransparency=0.6,
-Name="Outline",
-},{
-
-
-
-
-
-
-
-
-
-
-
-
-
-}),
-
-d.NewRoundFrame(v,"Squircle",{
-Size=UDim2.new(1,0,1,0),
-Name="Frame",
-ThemeTag={
-ImageColor3=l~="White"and"Text"or nil
-},
-ImageColor3=l=="White"and Color3.new(0,0,0)or nil,
-ImageTransparency=1
-},{
-e("UIPadding",{
-PaddingLeft=UDim.new(0,16),
-PaddingRight=UDim.new(0,16),
-}),
-e("UIListLayout",{
-FillDirection="Horizontal",
-Padding=UDim.new(0,8),
-VerticalAlignment="Center",
-HorizontalAlignment="Center",
-}),
-x,
-e("TextLabel",{
-BackgroundTransparency=1,
-FontFace=Font.new(d.Font,Enum.FontWeight.SemiBold),
-Text=g or"Button",
-ThemeTag={
-TextColor3=(l~="Primary"and l~="White")and"Text",
-},
-TextColor3=l=="Primary"and Color3.new(1,1,1)or l=="White"and Color3.new(0,0,0)or nil,
-AutomaticSize="XY",
-TextSize=18,
-})
-})
-})
-
-d.AddSignal(z.MouseEnter,function()
-f(z.Frame,.047,{ImageTransparency=.95}):Play()
-end)
-d.AddSignal(z.MouseLeave,function()
-f(z.Frame,.047,{ImageTransparency=1}):Play()
-end)
-d.AddSignal(z.MouseButton1Up,function()
-if p then
-p:Close()()
-end
-if j then
-d.SafeCallback(j)
-end
-end)
-
-return z
-end
-
-
-return b end function a.e():typeof(__modImpl())local b=a.cache.e if not b then b={c=__modImpl()}a.cache.e=b end return b.c end end do local function __modImpl()
 local b=a.c()
 local d=b.New
 local e=b.Tween
-local f=a.e().New
 
-local g={
+local f={
 Size=UDim2.new(0,300,1,-156),
 SizeLower=UDim2.new(0,300,1,-56),
 UICorner=18,
@@ -1370,53 +1248,21 @@ NotificationIndex=0,
 Notifications={}
 }
 
-local function NormalizeButtonLayout(h)
-if typeof(h)~="string"then
-return"Auto"
-end
-
-local j=string.lower(h)
-if j=="horizontal"then
-return"Horizontal"
-end
-if j=="vertical"then
-return"Vertical"
-end
-
-return"Auto"
-end
-
-local function ResolveHorizontalAlignment(h)
-if typeof(h)~="string"then
-return Enum.HorizontalAlignment.Right
-end
-
-local j=string.lower(h)
-if j=="left"then
-return Enum.HorizontalAlignment.Left
-end
-if j=="center"then
-return Enum.HorizontalAlignment.Center
-end
-
-return Enum.HorizontalAlignment.Right
-end
-
-function g.Init(h)
-local j={
+function f.Init(g)
+local h={
 Lower=false
 }
 
-function j.SetLower(l)
-j.Lower=l
-j.Frame.Size=l and g.SizeLower or g.Size
+function h.SetLower(j)
+h.Lower=j
+h.Frame.Size=j and f.SizeLower or f.Size
 end
 
-j.Frame=d("Frame",{
+h.Frame=d("Frame",{
 Position=UDim2.new(1,-29,0,56),
 AnchorPoint=Vector2.new(1,0),
-Size=g.Size,
-Parent=h,
+Size=f.Size,
+Parent=g,
 BackgroundTransparency=1,
 
 
@@ -1433,37 +1279,28 @@ d("UIPadding",{
 PaddingBottom=UDim.new(0,29)
 })
 })
-return j
+return h
 end
 
-function g.New(h)
-h=typeof(h)=="table"and h or{}
-
-local j={
-Title=h.Title or"Notification",
-Content=h.Content or nil,
-Icon=h.Icon or nil,
-IconThemed=h.IconThemed,
-Background=h.Background,
-BackgroundImageTransparency=h.BackgroundImageTransparency,
-Duration=h.Duration==nil and 5 or h.Duration,
-Buttons=h.Buttons or{},
-CanClose=h.CanClose~=false,
-ButtonLayout=NormalizeButtonLayout(h.ButtonLayout or h.ButtonsLayout),
-ButtonAlignment=ResolveHorizontalAlignment(h.ButtonAlignment or h.ButtonsAlignment),
-ButtonHeight=typeof(h.ButtonHeight)=="number"and math.max(28,h.ButtonHeight)or 40,
-ButtonPadding=typeof(h.ButtonPadding)=="number"and math.max(0,h.ButtonPadding)or 6,
-ButtonDebounce=h.ButtonDebounce~=false,
-ButtonCooldown=typeof(h.ButtonCooldown)=="number"and math.max(0,h.ButtonCooldown)or 0.12,
+function f.New(g)
+local h={
+Title=g.Title or"Notification",
+Content=g.Content or nil,
+Icon=g.Icon or nil,
+IconThemed=g.IconThemed,
+Background=g.Background,
+BackgroundImageTransparency=g.BackgroundImageTransparency,
+Duration=g.Duration or 5,
+Buttons=g.Buttons or{},
+CanClose=g.CanClose~=false,
 UIElements={},
 Closed=false,
 }
 
 
 
-g.NotificationIndex=g.NotificationIndex+1
-j.Index=g.NotificationIndex
-g.Notifications[j.Index]=j
+f.NotificationIndex=f.NotificationIndex+1
+f.Notifications[f.NotificationIndex]=h
 
 
 
@@ -1473,18 +1310,9 @@ g.Notifications[j.Index]=j
 
 
 
-local l
+local j
 
-if j.Icon then
-
-
-
-
-
-
-
-
-
+if h.Icon then
 
 
 
@@ -1497,28 +1325,37 @@ if j.Icon then
 
 
 
-l=b.Image(
-j.Icon,
-j.Title..":"..j.Icon,
+
+
+
+
+
+
+
+
+
+j=b.Image(
+h.Icon,
+h.Title..":"..h.Icon,
 0,
-h.Window,
+g.Window,
 "Notification",
-j.IconThemed
+h.IconThemed
 )
-l.Size=UDim2.new(0,26,0,26)
-l.Position=UDim2.new(0,g.UIPadding,0,g.UIPadding)
+j.Size=UDim2.new(0,26,0,26)
+j.Position=UDim2.new(0,f.UIPadding,0,f.UIPadding)
 
 end
 
-local m
-if j.CanClose then
-m=d("ImageButton",{
+local l
+if h.CanClose then
+l=d("ImageButton",{
 Image=b.Icon"x"[1],
 ImageRectSize=b.Icon"x"[2].ImageRectSize,
 ImageRectOffset=b.Icon"x"[2].ImageRectPosition,
 BackgroundTransparency=1,
 Size=UDim2.new(0,16,0,16),
-Position=UDim2.new(1,-g.UIPadding,0,g.UIPadding),
+Position=UDim2.new(1,-f.UIPadding,0,f.UIPadding),
 AnchorPoint=Vector2.new(1,0),
 ThemeTag={
 ImageColor3="Text"
@@ -1535,7 +1372,7 @@ Text="",
 })
 end
 
-local p=b.NewRoundFrame(g.UICorner,"Squircle",{
+local m=b.NewRoundFrame(f.UICorner,"Squircle",{
 Size=UDim2.new(0,0,1,0),
 ThemeTag={
 ImageTransparency="NotificationDurationTransparency",
@@ -1544,9 +1381,9 @@ ImageColor3="NotificationDuration",
 
 })
 
-local r=d("Frame",{
+local p=d("Frame",{
 Size=UDim2.new(1,
-j.Icon and-28-g.UIPadding or 0,
+h.Icon and-28-f.UIPadding or 0,
 1,0),
 Position=UDim2.new(1,0,0,0),
 AnchorPoint=Vector2.new(1,0),
@@ -1554,34 +1391,32 @@ BackgroundTransparency=1,
 AutomaticSize="Y",
 },{
 d("UIPadding",{
-PaddingTop=UDim.new(0,g.UIPadding),
-PaddingLeft=UDim.new(0,g.UIPadding),
-PaddingRight=UDim.new(0,g.UIPadding),
-PaddingBottom=UDim.new(0,g.UIPadding),
+PaddingTop=UDim.new(0,f.UIPadding),
+PaddingLeft=UDim.new(0,f.UIPadding),
+PaddingRight=UDim.new(0,f.UIPadding),
+PaddingBottom=UDim.new(0,f.UIPadding),
 }),
 d("TextLabel",{
 AutomaticSize="Y",
-Size=UDim2.new(1,-30-g.UIPadding,0,0),
+Size=UDim2.new(1,-30-f.UIPadding,0,0),
 TextWrapped=true,
 TextXAlignment="Left",
 RichText=true,
 BackgroundTransparency=1,
 TextSize=18,
-LayoutOrder=1,
 ThemeTag={
 TextColor3="NotificationTitle",
 TextTransparency="NotificationTitleTransparency",
 },
-Text=j.Title,
+Text=h.Title,
 FontFace=Font.new(b.Font,Enum.FontWeight.SemiBold)
 }),
 d("UIListLayout",{
-Padding=UDim.new(0,g.UIPadding/3),
-SortOrder="LayoutOrder",
+Padding=UDim.new(0,f.UIPadding/3)
 })
 })
 
-if j.Content then
+if h.Content then
 d("TextLabel",{
 AutomaticSize="Y",
 Size=UDim2.new(1,0,0,0),
@@ -1591,259 +1426,18 @@ RichText=true,
 BackgroundTransparency=1,
 
 TextSize=15,
-LayoutOrder=2,
 ThemeTag={
 TextColor3="NotificationContent",
 TextTransparency="NotificationContentTransparency",
 },
-Text=j.Content,
+Text=h.Content,
 FontFace=Font.new(b.Font,Enum.FontWeight.Medium),
-Parent=r
+Parent=p
 })
 end
 
-local u
-local v
-local x={}
-if j.Buttons and#j.Buttons>0 then
-local z={}
-local A=0
-local B=d("UIListLayout",{
-Padding=UDim.new(0,j.ButtonPadding),
-FillDirection="Horizontal",
-HorizontalAlignment=j.ButtonAlignment,
-VerticalAlignment="Center",
-})
 
-u=d("Frame",{
-Size=UDim2.new(1,0,0,j.ButtonHeight),
-BackgroundTransparency=1,
-AutomaticSize="None",
-LayoutOrder=3,
-Parent=r,
-},{
-B,
-})
-
-local function CloseFromButton(C)
-if typeof(C)=="number"and C>0 then
-task.delay(C,function()
-if not j.Closed then
-j:Close()
-end
-end)
-else
-j:Close()
-end
-end
-
-local function ApplyHorizontalLayout()
-B.FillDirection=Enum.FillDirection.Horizontal
-B.HorizontalAlignment=j.ButtonAlignment
-B.VerticalAlignment=Enum.VerticalAlignment.Center
-u.Size=UDim2.new(1,0,0,j.ButtonHeight)
-u.AutomaticSize=Enum.AutomaticSize.None
-
-for C,F in ipairs(z)do
-local G=F.ButtonFrame
-if F.Width then
-G.Size=UDim2.new(0,F.Width,1,0)
-G.AutomaticSize=Enum.AutomaticSize.None
-else
-G.Size=UDim2.new(0,0,1,0)
-G.AutomaticSize=Enum.AutomaticSize.X
-end
-end
-end
-
-local function ApplyVerticalLayout()
-B.FillDirection=Enum.FillDirection.Vertical
-B.HorizontalAlignment=j.ButtonAlignment
-B.VerticalAlignment=Enum.VerticalAlignment.Top
-u.AutomaticSize=Enum.AutomaticSize.Y
-
-for C,F in ipairs(z)do
-local G=F.ButtonFrame
-G.Size=UDim2.new(1,0,0,F.Height)
-G.AutomaticSize=Enum.AutomaticSize.None
-end
-end
-
-for C,F in next,j.Buttons do
-if typeof(F)~="table"then
-F={
-Title=tostring(F),
-}
-end
-
-local G={
-Index=C,
-Callback=F.Callback,
-CloseOnClick=F.CloseOnClick~=false,
-CloseDelay=typeof(F.CloseDelay)=="number"and math.max(0,F.CloseDelay)or 0,
-CloseBeforeCallback=F.CloseBeforeCallback==true,
-Debounce=F.Debounce==nil and j.ButtonDebounce or F.Debounce==true,
-Cooldown=typeof(F.Cooldown)=="number"and math.max(0,F.Cooldown)or j.ButtonCooldown,
-Disabled=F.Disabled==true,
-Busy=false,
-Width=typeof(F.Width)=="number"and math.max(0,F.Width)or nil,
-Height=typeof(F.Height)=="number"and math.max(28,F.Height)or j.ButtonHeight,
-Visible=F.Visible~=false,
-RunAsync=(F.RunAsync==nil and F.Async==nil)or(F.RunAsync~=false and F.Async~=false),
-}
-
-local H
-
-local function UpdateState()
-local J=not j.Closed and G.Visible and not G.Disabled and not G.Busy
-local L=G.ButtonFrame:FindFirstChild"Frame"
-local M=G.ButtonFrame:FindFirstChild("TextLabel",true)
-
-G.ButtonFrame.Active=J
-G.ButtonFrame.Selectable=J
-G.ButtonFrame.Visible=G.Visible
-
-if L and L:IsA"ImageLabel"then
-L.ImageTransparency=J and 1 or 0.92
-end
-
-if M and M:IsA"TextLabel"then
-M.TextTransparency=J and 0 or 0.35
-end
-end
-
-local function RunButton()
-if j.Closed or G.Disabled or G.Busy or not G.Visible then
-return
-end
-
-if G.Debounce then
-G.Busy=true
-UpdateState()
-end
-
-local function finish()
-if not G.Debounce then
-return
-end
-
-task.delay(G.Cooldown,function()
-G.Busy=false
-if G.ButtonFrame.Parent~=nil then
-UpdateState()
-end
-end)
-end
-
-local function callbackFlow()
-if G.CloseOnClick and G.CloseBeforeCallback then
-CloseFromButton(G.CloseDelay)
-end
-
-b.SafeCallback(G.Callback,j,H,G.Index)
-
-if G.CloseOnClick and not G.CloseBeforeCallback then
-CloseFromButton(G.CloseDelay)
-end
-
-finish()
-end
-
-if G.RunAsync then
-task.spawn(callbackFlow)
-else
-callbackFlow()
-end
-end
-
-local J=f(
-F.Title or F.Text,
-F.Icon,
-RunButton,
-F.Variant,
-u
-)
-J.Visible=G.Visible
-J.LayoutOrder=typeof(F.LayoutOrder)=="number"and F.LayoutOrder or C
-
-G.ButtonFrame=J
-
-H={
-Index=G.Index,
-ButtonFrame=J,
-Click=function()
-RunButton()
-end,
-SetDisabled=function(L,M)
-G.Disabled=M==true
-UpdateState()
-end,
-SetVisible=function(L,M)
-G.Visible=M~=false
-UpdateState()
-if v then
-v()
-end
-end,
-SetTitle=function(L,M)
-local N=J:FindFirstChild("TextLabel",true)
-if N and N:IsA"TextLabel"then
-N.Text=tostring(M or"Button")
-if v then
-v()
-end
-end
-end
-}
-
-UpdateState()
-table.insert(x,H)
-table.insert(z,G)
-
-b.AddSignal(J:GetPropertyChangedSignal"AbsoluteSize",function()
-if v then
-v()
-end
-end)
-end
-
-v=function()
-if j.Closed or u.Parent==nil then
-return
-end
-
-A=A+1
-local C=A
-
-if j.ButtonLayout=="Vertical"then
-ApplyVerticalLayout()
-return
-end
-
-ApplyHorizontalLayout()
-if j.ButtonLayout=="Horizontal"then
-return
-end
-
-task.defer(function()
-if C~=A then
-return
-end
-if j.Closed or u.Parent==nil then
-return
-end
-
-local F=B.AbsoluteContentSize.X
-local G=u.AbsoluteSize.X
-if F>G then
-ApplyVerticalLayout()
-end
-end)
-end
-end
-
-
-local z=b.NewRoundFrame(g.UICorner,"Squircle",{
+local r=b.NewRoundFrame(f.UICorner,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 Position=UDim2.new(2,0,1,0),
 AnchorPoint=Vector2.new(0,1),
@@ -1854,7 +1448,7 @@ ImageColor3="Notification"
 },
 
 },{
-b.NewRoundFrame(g.UICorner,"Glass-1",{
+b.NewRoundFrame(f.UICorner,"Glass-1",{
 Size=UDim2.new(1,0,1,0),
 ThemeTag={
 ImageColor3="NotificationBorder",
@@ -1871,7 +1465,7 @@ Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
 ClipsDescendants=true,
 },{
-p,
+m,
 }),
 
 
@@ -1881,108 +1475,68 @@ p,
 }),
 d("ImageLabel",{
 Name="Background",
-Image=j.Background,
+Image=h.Background,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,1,0),
 ScaleType="Crop",
-ImageTransparency=j.BackgroundImageTransparency
+ImageTransparency=h.BackgroundImageTransparency
 
 },{
 d("UICorner",{
-CornerRadius=UDim.new(0,g.UICorner),
+CornerRadius=UDim.new(0,f.UICorner),
 })
 }),
 
-r,
-l,m,
+p,
+j,l,
 })
 
-local A=d("Frame",{
+local u=d("Frame",{
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Parent=h.Holder
+Parent=g.Holder
 },{
-z
+r
 })
 
-j.UIElements.Main=z
-j.UIElements.MainContainer=A
-j.UIElements.TextContainer=r
-j.UIElements.ButtonsContainer=u
-j.UIElements.Buttons=x
-j.UIElements.CloseButton=m
-j.UIElements.Duration=p
-j.UIElements.Icon=l
-
-if v and u then
-b.AddSignal(u:GetPropertyChangedSignal"AbsoluteSize",v)
-b.AddSignal(r:GetPropertyChangedSignal"AbsoluteSize",v)
-local B=u:FindFirstChildOfClass"UIListLayout"
-if B then
-b.AddSignal(B:GetPropertyChangedSignal"AbsoluteContentSize",v)
-end
-task.defer(v)
-end
-
-function j.Close(B)
-if not j.Closed then
-j.Closed=true
-g.Notifications[j.Index]=nil
-
-for C,F in ipairs(x)do
-if F.SetDisabled then
-F:SetDisabled(true)
-end
-end
-
-e(A,0.45,{Size=UDim2.new(1,0,0,-8)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-e(z,0.55,{Position=UDim2.new(2,0,1,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+function h.Close(v)
+if not h.Closed then
+h.Closed=true
+e(u,0.45,{Size=UDim2.new(1,0,0,-8)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+e(r,0.55,{Position=UDim2.new(2,0,1,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
 task.wait(.45)
-if A.Parent~=nil then
-A:Destroy()
-end
+u:Destroy()
 end
 end
 
 task.spawn(function()
 task.wait()
-if j.Closed or A.Parent==nil then
-return
-end
-e(A,0.45,{Size=UDim2.new(
+e(u,0.45,{Size=UDim2.new(
 1,
 0,
 0,
-z.AbsoluteSize.Y
+r.AbsoluteSize.Y
 )},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-e(z,0.45,{Position=UDim2.new(0,0,1,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-if j.Duration and not j.Closed then
-p.Size=UDim2.new(0,z.DurationFrame.AbsoluteSize.X,1,0)
-e(z.DurationFrame.Frame,j.Duration,{Size=UDim2.new(0,0,1,0)},Enum.EasingStyle.Linear,Enum.EasingDirection.InOut):Play()
-task.wait(j.Duration)
-if not j.Closed then
-j:Close()
-end
+e(r,0.45,{Position=UDim2.new(0,0,1,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+if h.Duration then
+m.Size=UDim2.new(0,r.DurationFrame.AbsoluteSize.X,1,0)
+e(r.DurationFrame.Frame,h.Duration,{Size=UDim2.new(0,0,1,0)},Enum.EasingStyle.Linear,Enum.EasingDirection.InOut):Play()
+task.wait(h.Duration)
+h:Close()
 end
 end)
 
-if m then
-b.AddSignal(m.MouseButton1Click,function()
-j:Close()
-end)
-if m:FindFirstChild"TextButton"then
-b.AddSignal(m.TextButton.MouseButton1Click,function()
-j:Close()
+if l then
+b.AddSignal(l.TextButton.MouseButton1Click,function()
+h:Close()
 end)
 end
+
+
+return h
 end
 
-
-return j
-end
-
-return g end function a.f():typeof(__modImpl())local b=a.cache.f if not b then b={c=__modImpl()}a.cache.f=b end return b.c end end do local function __modImpl()
-
+return f end function a.e():typeof(__modImpl())local b=a.cache.e if not b then b={c=__modImpl()}a.cache.e=b end return b.c end end do local function __modImpl()
 
 
 
@@ -2264,7 +1818,7 @@ Copy=au,
 end
 
 
-return X end function a.g():typeof(__modImpl())local aa=a.cache.g if not aa then aa={c=__modImpl()}a.cache.g=aa end return aa.c end end do local function __modImpl()
+return X end function a.f():typeof(__modImpl())local aa=a.cache.f if not aa then aa={c=__modImpl()}a.cache.f=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -2350,7 +1904,7 @@ Copy=CopyLink,
 }
 end
 
-return ac end function a.h():typeof(__modImpl())local aa=a.cache.h if not aa then aa={c=__modImpl()}a.cache.h=aa end return aa.c end end do local function __modImpl()
+return ac end function a.g():typeof(__modImpl())local aa=a.cache.g if not aa then aa={c=__modImpl()}a.cache.g=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -2401,7 +1955,7 @@ Copy=CopyLink
 end
 
 
-return aa end function a.i():typeof(__modImpl())local aa=a.cache.i if not aa then aa={c=__modImpl()}a.cache.i=aa end return aa.c end end do local function __modImpl()
+return aa end function a.h():typeof(__modImpl())local aa=a.cache.h if not aa then aa={c=__modImpl()}a.cache.h=aa end return aa.c end end do local function __modImpl()
 
 
 
@@ -2462,7 +2016,7 @@ Copy=copyLink
 }
 end
 
-return aa end function a.j():typeof(__modImpl())local aa=a.cache.j if not aa then aa={c=__modImpl()}a.cache.j=aa end return aa.c end end do local function __modImpl()
+return aa end function a.i():typeof(__modImpl())local aa=a.cache.i if not aa then aa={c=__modImpl()}a.cache.i=aa end return aa.c end end do local function __modImpl()
 
 
 return{
@@ -2471,32 +2025,32 @@ Name="Platoboost",
 Icon="rbxassetid://75920162824531",
 Args={"ServiceId","Secret"},
 
-New=a.g().New
+New=a.f().New
 },
 pandadevelopment={
 Name="Panda Development",
 Icon="panda",
 Args={"ServiceId"},
 
-New=a.h().New
+New=a.g().New
 },
 luarmor={
 Name="Luarmor",
 Icon="rbxassetid://130918283130165",
 Args={"ScriptId","Discord"},
 
-New=a.i().New
+New=a.h().New
 },
 junkiedevelopment={
 Name="Junkie Development",
 Icon="rbxassetid://106310347705078",
 Args={"ServiceId","ApiKey","Provider"},
 
-New=a.j().New
+New=a.i().New
 },
 
 
-}end function a.k():typeof(__modImpl())local aa=a.cache.k if not aa then aa={c=__modImpl()}a.cache.k=aa end return aa.c end end do local function __modImpl()
+}end function a.j():typeof(__modImpl())local aa=a.cache.j if not aa then aa={c=__modImpl()}a.cache.j=aa end return aa.c end end do local function __modImpl()
 
 
 return[[
@@ -2530,8 +2084,152 @@ return[[
         "concurrently": "^9.2.0"
     }
 }
-]]end function a.l():typeof(__modImpl())local aa=a.cache.l if not aa then aa={c=__modImpl()}a.cache.l=aa end return aa.c end end do local function __modImpl()
+]]end function a.k():typeof(__modImpl())local aa=a.cache.k if not aa then aa={c=__modImpl()}a.cache.k=aa end return aa.c end end do local function __modImpl()
 
+local aa={}
+
+local ab=a.c()
+local ac=ab.New
+local ad=ab.Tween
+
+function aa.New(ae,af,ag,ah,ai,aj,ak,al)
+ah=ah or"Primary"
+local am=al or(not ak and 10 or 99)
+local an
+if af and af~=""then
+an=ac("ImageLabel",{
+Image=ab.Icon(af)[1],
+ImageRectSize=ab.Icon(af)[2].ImageRectSize,
+ImageRectOffset=ab.Icon(af)[2].ImageRectPosition,
+Size=UDim2.new(0,21,0,21),
+BackgroundTransparency=1,
+ImageColor3=ah=="White"and Color3.new(0,0,0)or nil,
+ImageTransparency=ah=="White"and 0.4 or 0,
+ThemeTag={
+ImageColor3=ah~="White"and"Icon"or nil,
+},
+})
+end
+
+local ao=ac("TextButton",{
+Size=UDim2.new(0,0,1,0),
+AutomaticSize="X",
+Parent=ai,
+BackgroundTransparency=1,
+},{
+ab.NewRoundFrame(am,"Squircle",{
+ThemeTag={
+ImageColor3=ah~="White"and"Button"or nil,
+},
+ImageColor3=ah=="White"and Color3.new(1,1,1)or nil,
+Size=UDim2.new(1,0,1,0),
+Name="Squircle",
+ImageTransparency=ah=="Primary"and 0 or ah=="White"and 0 or 1,
+}),
+
+ab.NewRoundFrame(am,"Squircle",{
+
+
+
+ImageColor3=Color3.new(1,1,1),
+Size=UDim2.new(1,0,1,0),
+Name="Special",
+ImageTransparency=ah=="Secondary"and 0.95 or 1,
+}),
+
+ab.NewRoundFrame(am,"Shadow-sm",{
+
+
+
+ImageColor3=Color3.new(0,0,0),
+Size=UDim2.new(1,3,1,3),
+AnchorPoint=Vector2.new(0.5,0.5),
+Position=UDim2.new(0.5,0,0.5,0),
+Name="Shadow",
+
+ImageTransparency=1,
+Visible=not ak,
+}),
+
+ab.NewRoundFrame(am,not ak and"Glass-1"or"Glass-0.7",{
+ThemeTag={
+ImageColor3="White",
+},
+Size=UDim2.new(1,0,1,0),
+
+ImageTransparency=0.6,
+Name="Outline",
+},{
+
+
+
+
+
+
+
+
+
+
+
+
+
+}),
+
+ab.NewRoundFrame(am,"Squircle",{
+Size=UDim2.new(1,0,1,0),
+Name="Frame",
+ThemeTag={
+ImageColor3=ah~="White"and"Text"or nil,
+},
+ImageColor3=ah=="White"and Color3.new(0,0,0)or nil,
+ImageTransparency=1,
+},{
+ac("UIPadding",{
+PaddingLeft=UDim.new(0,16),
+PaddingRight=UDim.new(0,16),
+}),
+ac("UIListLayout",{
+FillDirection="Horizontal",
+Padding=UDim.new(0,8),
+VerticalAlignment="Center",
+HorizontalAlignment="Center",
+}),
+an,
+ac("TextLabel",{
+BackgroundTransparency=1,
+FontFace=Font.new(ab.Font,Enum.FontWeight.SemiBold),
+Text=ae or"Button",
+ThemeTag={
+TextColor3=(ah~="Primary"and ah~="White")and"Text",
+},
+TextColor3=ah=="Primary"and Color3.new(1,1,1)
+or ah=="White"and Color3.new(0,0,0)
+or nil,
+AutomaticSize="XY",
+TextSize=18,
+}),
+}),
+})
+
+ab.AddSignal(ao.MouseEnter,function()
+ad(ao.Frame,0.047,{ImageTransparency=0.95}):Play()
+end)
+ab.AddSignal(ao.MouseLeave,function()
+ad(ao.Frame,0.047,{ImageTransparency=1}):Play()
+end)
+ab.AddSignal(ao.MouseButton1Up,function()
+if aj then
+aj:Close()()
+end
+if ag then
+ab.SafeCallback(ag)
+end
+end)
+
+return ao
+end
+
+return aa end function a.l():typeof(__modImpl())local aa=a.cache.l if not aa then aa={c=__modImpl()}a.cache.l=aa end return aa.c end end do local function __modImpl()
 local aa={}
 
 local ab=a.c()
@@ -2858,48 +2556,47 @@ local ab=a.c()
 local ac=ab.New
 local ad=ab.Tween
 
-local ae=a.e().New
+local ae=a.l().New
 local af=a.m().New
-local ag=setclipboard or toclipboard
 
-function aa.new(ah,ai,aj,ak)
-local al=a.n().Init(nil,ah.WindUI.ScreenGui.KeySystem)
-local am=al.Create(true)
+function aa.new(ag,ah,ai,aj)
+local ak=a.n().Init(nil,ag.WindUI.ScreenGui.KeySystem)
+local al=ak.Create(true)
 
-local an={}
+local am={}
 
-local ao
+local an
 
-local ap=(ah.KeySystem.Thumbnail and ah.KeySystem.Thumbnail.Width)or 200
+local ao=(ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Width)or 200
 
-local aq=430
-if ah.KeySystem.Thumbnail and ah.KeySystem.Thumbnail.Image then
-aq=430+(ap/2)
+local ap=430
+if ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Image then
+ap=430+(ao/2)
 end
 
-am.UIElements.Main.AutomaticSize="Y"
-am.UIElements.Main.Size=UDim2.new(0,aq,0,0)
+al.UIElements.Main.AutomaticSize="Y"
+al.UIElements.Main.Size=UDim2.new(0,ap,0,0)
 
-local ar
+local aq
 
-if ah.Icon then
+if ag.Icon then
 
-ar=ab.Image(
-ah.Icon,
-ah.Title..":"..ah.Icon,
+aq=ab.Image(
+ag.Icon,
+ag.Title..":"..ag.Icon,
 0,
 "Temp",
 "KeySystem",
-ah.IconThemed
+ag.IconThemed
 )
-ar.Size=UDim2.new(0,24,0,24)
-ar.LayoutOrder=-1
+aq.Size=UDim2.new(0,24,0,24)
+aq.LayoutOrder=-1
 end
 
-local as=ac("TextLabel",{
+local ar=ac("TextLabel",{
 AutomaticSize="XY",
 BackgroundTransparency=1,
-Text=ah.KeySystem.Title or ah.Title,
+Text=ag.KeySystem.Title or ag.Title,
 FontFace=Font.new(ab.Font,Enum.FontWeight.SemiBold),
 ThemeTag={
 TextColor3="Text",
@@ -2907,7 +2604,7 @@ TextColor3="Text",
 TextSize=20
 })
 
-local at=ac("TextLabel",{
+local as=ac("TextLabel",{
 AutomaticSize="XY",
 BackgroundTransparency=1,
 Text="Key System",
@@ -2921,7 +2618,7 @@ TextColor3="Text",
 TextSize=16
 })
 
-local au=ac("Frame",{
+local at=ac("Frame",{
 BackgroundTransparency=1,
 AutomaticSize="XY",
 },{
@@ -2930,10 +2627,10 @@ Padding=UDim.new(0,14),
 FillDirection="Horizontal",
 VerticalAlignment="Center"
 }),
-ar,as
+aq,ar
 })
 
-local av=ac("Frame",{
+local au=ac("Frame",{
 AutomaticSize="Y",
 Size=UDim2.new(1,0,0,0),
 BackgroundTransparency=1,
@@ -2943,21 +2640,21 @@ BackgroundTransparency=1,
 
 
 
-au,at,
+at,as,
 })
 
-local aw=af("Enter Key","key",nil,"Input",function(aw)
-ao=aw
+local av=af("Enter Key","key",nil,"Input",function(av)
+an=av
 end)
 
-local ax
-if ah.KeySystem.Note and ah.KeySystem.Note~=""then
-ax=ac("TextLabel",{
+local aw
+if ag.KeySystem.Note and ag.KeySystem.Note~=""then
+aw=ac("TextLabel",{
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
 TextXAlignment="Left",
-Text=ah.KeySystem.Note,
+Text=ag.KeySystem.Note,
 TextSize=18,
 TextTransparency=.4,
 ThemeTag={
@@ -2969,7 +2666,7 @@ TextWrapped=true,
 })
 end
 
-local ay=ac("Frame",{
+local ax=ac("Frame",{
 Size=UDim2.new(1,0,0,42),
 BackgroundTransparency=1,
 },{
@@ -2986,12 +2683,12 @@ FillDirection="Horizontal",
 })
 
 
+local ay
+if ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Image then
 local az
-if ah.KeySystem.Thumbnail and ah.KeySystem.Thumbnail.Image then
-local aA
-if ah.KeySystem.Thumbnail.Title then
-aA=ac("TextLabel",{
-Text=ah.KeySystem.Thumbnail.Title,
+if ag.KeySystem.Thumbnail.Title then
+az=ac("TextLabel",{
+Text=ag.KeySystem.Thumbnail.Title,
 ThemeTag={
 TextColor3="Text",
 },
@@ -3003,15 +2700,15 @@ AnchorPoint=Vector2.new(0.5,0.5),
 Position=UDim2.new(0.5,0,0.5,0),
 })
 end
-az=ac("ImageLabel",{
-Image=ah.KeySystem.Thumbnail.Image,
+ay=ac("ImageLabel",{
+Image=ag.KeySystem.Thumbnail.Image,
 BackgroundTransparency=1,
-Size=UDim2.new(0,ap,1,-12),
+Size=UDim2.new(0,ao,1,-12),
 Position=UDim2.new(0,6,0,6),
-Parent=am.UIElements.Main,
+Parent=al.UIElements.Main,
 ScaleType="Crop"
 },{
-aA,
+az,
 ac("UICorner",{
 CornerRadius=UDim.new(0,20),
 })
@@ -3020,10 +2717,10 @@ end
 
 ac("Frame",{
 
-Size=UDim2.new(1,az and-ap or 0,1,0),
-Position=UDim2.new(0,az and ap or 0,0,0),
+Size=UDim2.new(1,ay and-ao or 0,1,0),
+Position=UDim2.new(0,ay and ao or 0,0,0),
 BackgroundTransparency=1,
-Parent=am.UIElements.Main
+Parent=al.UIElements.Main
 },{
 ac("Frame",{
 
@@ -3034,10 +2731,10 @@ ac("UIListLayout",{
 Padding=UDim.new(0,18),
 FillDirection="Vertical",
 }),
+au,
+aw,
 av,
 ax,
-aw,
-ay,
 ac("UIPadding",{
 PaddingTop=UDim.new(0,16),
 PaddingLeft=UDim.new(0,16),
@@ -3051,32 +2748,24 @@ PaddingBottom=UDim.new(0,16),
 
 
 
-local aA=ae("Exit","log-out",function()
-am:Close()()
-end,"Tertiary",ay.Frame)
+local az=ae("Exit","log-out",function()
+al:Close()()
+end,"Tertiary",ax.Frame)
 
-if az then
-aA.Parent=az
-aA.Size=UDim2.new(0,0,0,42)
-aA.Position=UDim2.new(0,10,1,-10)
-aA.AnchorPoint=Vector2.new(0,1)
+if ay then
+az.Parent=ay
+az.Size=UDim2.new(0,0,0,42)
+az.Position=UDim2.new(0,10,1,-10)
+az.AnchorPoint=Vector2.new(0,1)
 end
 
-if ah.KeySystem.URL then
+if ag.KeySystem.URL then
 ae("Get key","key",function()
-if ag then
-ag(ah.KeySystem.URL)
-else
-ah.WindUI:Notify{
-Title="Key System. Error",
-Content="Clipboard API is not available in this executor.",
-Icon="triangle-alert",
-}
-end
-end,"Secondary",ay.Frame)
+setclipboard(ag.KeySystem.URL)
+end,"Secondary",ax.Frame)
 end
 
-if ah.KeySystem.API then
+if ag.KeySystem.API then
 
 
 
@@ -3085,11 +2774,11 @@ if ah.KeySystem.API then
 
 
 
-local aB=240
-local b=false
-local d=ae("Get key","key",nil,"Secondary",ay.Frame)
+local aA=240
+local aB=false
+local b=ae("Get key","key",nil,"Secondary",ax.Frame)
 
-local f=ab.NewRoundFrame(99,"Squircle",{
+local d=ab.NewRoundFrame(99,"Squircle",{
 Size=UDim2.new(0,1,1,0),
 ThemeTag={
 ImageColor3="Text",
@@ -3101,16 +2790,16 @@ ac("Frame",{
 BackgroundTransparency=1,
 Size=UDim2.new(0,0,1,0),
 AutomaticSize="X",
-Parent=d.Frame,
+Parent=b.Frame,
 },{
-f,
+d,
 ac("UIPadding",{
 PaddingLeft=UDim.new(0,5),
 PaddingRight=UDim.new(0,5),
 })
 })
 
-local g=ab.Image(
+local f=ab.Image(
 "chevron-down",
 "chevron-down",
 0,
@@ -3119,17 +2808,17 @@ local g=ab.Image(
 true
 )
 
-g.Size=UDim2.new(1,0,1,0)
+f.Size=UDim2.new(1,0,1,0)
 
 ac("Frame",{
 Size=UDim2.new(0,21,0,21),
-Parent=d.Frame,
+Parent=b.Frame,
 BackgroundTransparency=1,
 },{
-g
+f
 })
 
-local h=ab.NewRoundFrame(15,"Squircle",{
+local g=ab.NewRoundFrame(15,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 ThemeTag={
@@ -3148,15 +2837,15 @@ Padding=UDim.new(0,5),
 })
 })
 
-local j=ac("Frame",{
+local h=ac("Frame",{
 BackgroundTransparency=1,
-Size=UDim2.new(0,aB,0,0),
+Size=UDim2.new(0,aA,0,0),
 ClipsDescendants=true,
 AnchorPoint=Vector2.new(1,0),
-Parent=d,
+Parent=b,
 Position=UDim2.new(1,0,1,15)
 },{
-h
+g
 })
 
 ac("TextLabel",{
@@ -3170,7 +2859,7 @@ Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 TextWrapped=true,
 TextXAlignment="Left",
-Parent=h,
+Parent=g,
 },{
 ac("UIPadding",{
 PaddingTop=UDim.new(0,10),
@@ -3180,34 +2869,33 @@ PaddingBottom=UDim.new(0,10),
 })
 })
 
-for l,m in next,ah.KeySystem.API do
-local p=ah.WindUI.Services[m.Type]
-if p then
-local r={}
-for u,v in next,p.Args do
-table.insert(r,m[v])
+for j,l in next,ag.KeySystem.API do
+local m=ag.WindUI.Services[l.Type]
+if m then
+local p={}
+for r,u in next,m.Args do
+table.insert(p,l[u])
 end
 
-local u=p.New(table.unpack(r))
-u.Type=m.Type
-table.insert(an,u)
+local r=m.New(table.unpack(p))
+r.Type=l.Type
+table.insert(am,r)
 
-local v=m.Icon or p.Icon or"user"
-local x=ab.Image(
-v,
-v,
+local u=ab.Image(
+l.Icon or m.Icon or Icons[l.Type]or"user",
+l.Icon or m.Icon or Icons[l.Type]or"user",
 0,
 "Temp",
 "KeySystem",
 true
 )
-x.Size=UDim2.new(0,24,0,24)
+u.Size=UDim2.new(0,24,0,24)
 
-local z=ab.NewRoundFrame(10,"Squircle",{
+local v=ab.NewRoundFrame(10,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 ThemeTag={ImageColor3="Text"},
 ImageTransparency=1,
-Parent=h,
+Parent=g,
 AutomaticSize="Y",
 },{
 ac("UIListLayout",{
@@ -3215,7 +2903,7 @@ FillDirection="Horizontal",
 Padding=UDim.new(0,10),
 VerticalAlignment="Center",
 }),
-x,
+u,
 ac("UIPadding",{
 PaddingTop=UDim.new(0,10),
 PaddingLeft=UDim.new(0,10),
@@ -3233,7 +2921,7 @@ Padding=UDim.new(0,5),
 HorizontalAlignment="Center",
 }),
 ac("TextLabel",{
-Text=m.Title or p.Name,
+Text=l.Title or m.Name,
 BackgroundTransparency=1,
 FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
 ThemeTag={TextColor3="Text"},
@@ -3245,7 +2933,7 @@ TextWrapped=true,
 TextXAlignment="Left",
 }),
 ac("TextLabel",{
-Text=m.Desc or"",
+Text=l.Desc or"",
 BackgroundTransparency=1,
 FontFace=Font.new(ab.Font,Enum.FontWeight.Regular),
 ThemeTag={TextColor3="Text"},
@@ -3254,21 +2942,21 @@ TextSize=16,
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 TextWrapped=true,
-Visible=m.Desc and true or false,
+Visible=l.Desc and true or false,
 TextXAlignment="Left",
 })
 })
 },true)
 
-ab.AddSignal(z.MouseEnter,function()
-ad(z,0.08,{ImageTransparency=.95}):Play()
+ab.AddSignal(v.MouseEnter,function()
+ad(v,0.08,{ImageTransparency=.95}):Play()
 end)
-ab.AddSignal(z.InputEnded,function()
-ad(z,0.08,{ImageTransparency=1}):Play()
+ab.AddSignal(v.InputEnded,function()
+ad(v,0.08,{ImageTransparency=1}):Play()
 end)
-ab.AddSignal(z.MouseButton1Click,function()
-u.Copy()
-ah.WindUI:Notify{
+ab.AddSignal(v.MouseButton1Click,function()
+r.Copy()
+ag.WindUI:Notify{
 Title="Key System",
 Content="Key link copied to clipboard.",
 Image="key",
@@ -3277,65 +2965,72 @@ end)
 end
 end
 
-ab.AddSignal(d.MouseButton1Click,function()
-if not b then
-ad(j,.3,{Size=UDim2.new(0,aB,0,h.AbsoluteSize.Y+1)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-ad(g,.3,{Rotation=180},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+ab.AddSignal(b.MouseButton1Click,function()
+if not aB then
+ad(h,.3,{Size=UDim2.new(0,aA,0,g.AbsoluteSize.Y+1)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+ad(f,.3,{Rotation=180},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
 else
-ad(j,.25,{Size=UDim2.new(0,aB,0,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-ad(g,.25,{Rotation=0},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+ad(h,.25,{Size=UDim2.new(0,aA,0,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+ad(f,.25,{Rotation=0},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
 end
-b=not b
+aB=not aB
 end)
 
 end
 
-local function handleSuccess(aB)
-am:Close()()
-writefile((ah.Folder or"Temp").."/"..ai..".key",tostring(aB))
-task.wait(.4)
-aj(true)
+local function handleSuccess(aA)
+local aB=ag.Folder or"Temp"
+
+if writefile and makefolder and isfolder and not isfolder(aB)then
+makefolder(aB)
 end
 
-local aB=ae("Submit","arrow-right",function()
-local aB=tostring(ao or"empty")
+al:Close()()
+writefile(aB.."/"..ah..".key",tostring(aA))
+task.wait(.4)
+ai(true)
+end
 
-if ah.KeySystem.KeyValidator then
-local b=ah.KeySystem.KeyValidator(aB)
+local aA=ae("Submit","arrow-right",function()
+local aA=tostring(an or"empty")local aB=
+ag.Folder or ag.Title
+
+if ag.KeySystem.KeyValidator then
+local b=ag.KeySystem.KeyValidator(aA)
 
 if b then
-if ah.KeySystem.SaveKey then
-handleSuccess(aB)
+if ag.KeySystem.SaveKey then
+handleSuccess(aA)
 else
-am:Close()()
+al:Close()()
 task.wait(.4)
-aj(true)
+ai(true)
 end
 else
-ah.WindUI:Notify{
+ag.WindUI:Notify{
 Title="Key System. Error",
 Content="Invalid key.",
 Icon="triangle-alert",
 }
 end
-elseif not ah.KeySystem.API then
-local b=type(ah.KeySystem.Key)=="table"
-and table.find(ah.KeySystem.Key,aB)
-or ah.KeySystem.Key==aB
+elseif not ag.KeySystem.API then
+local b=type(ag.KeySystem.Key)=="table"
+and table.find(ag.KeySystem.Key,aA)
+or ag.KeySystem.Key==aA
 
 if b then
-if ah.KeySystem.SaveKey then
-handleSuccess(aB)
+if ag.KeySystem.SaveKey then
+handleSuccess(aA)
 else
-am:Close()()
+al:Close()()
 task.wait(.4)
-aj(true)
+ai(true)
 end
 end
 else
 local b,d
-for f,g in next,an do
-local h,j=g.Verify(aB)
+for f,g in next,am do
+local h,j=g.Verify(aA)
 if h then
 b,d=true,j
 break
@@ -3344,21 +3039,19 @@ d=j
 end
 
 if b then
-handleSuccess(aB)
+handleSuccess(aA)
 else
-ah.WindUI:Notify{
+ag.WindUI:Notify{
 Title="Key System. Error",
 Content=d,
 Icon="triangle-alert",
 }
 end
 end
-end,"Primary",ay)
+end,"Primary",ax)
 
-aB.AnchorPoint=Vector2.new(1,0.5)
-aB.Position=UDim2.new(1,0,0.5,0)
-
-
+aA.AnchorPoint=Vector2.new(1,0.5)
+aA.Position=UDim2.new(1,0,0.5,0)
 
 
 
@@ -3367,7 +3060,9 @@ aB.Position=UDim2.new(1,0,0.5,0)
 
 
 
-am:Open()
+
+
+al:Open()
 end
 
 return aa end function a.o():typeof(__modImpl())local aa=a.cache.o if not aa then aa={c=__modImpl()}a.cache.o=aa end return aa.c end end do local function __modImpl()
@@ -3899,7 +3594,7 @@ PaddingBottom=UDim.new(0,16),
 }),
 })
 
-local ar=a.e().New
+local ar=a.l().New
 
 for as,at in next,af.Buttons do
 ar(at.Title,at.Icon,at.Callback,at.Variant,ap,ah)
@@ -4247,7 +3942,6 @@ local ab=a.c()
 local ac=ab.New local ad=
 ab.Tween
 
-
 function aa.New(ae,af,ag,ah,ai)
 local aj=ai or 10
 local ak
@@ -4260,7 +3954,7 @@ Size=UDim2.new(0,21,0,21),
 BackgroundTransparency=1,
 ThemeTag={
 ImageColor3="Icon",
-}
+},
 })
 end
 
@@ -4291,14 +3985,14 @@ ThemeTag={
 ImageColor3="Accent",
 },
 Size=UDim2.new(1,0,1,0),
-ImageTransparency=.97,
+ImageTransparency=0.97,
 }),
 ab.NewRoundFrame(aj,"Glass-1.4",{
 ThemeTag={
 ImageColor3="Outline",
 },
 Size=UDim2.new(1,0,1,0),
-ImageTransparency=.75,
+ImageTransparency=0.48,
 },{
 
 
@@ -4336,13 +4030,12 @@ HorizontalAlignment="Left",
 }),
 ak,
 al,
-})
-})
+}),
+}),
 })
 
 return am
 end
-
 
 return aa end function a.v():typeof(__modImpl())local aa=a.cache.v if not aa then aa={c=__modImpl()}a.cache.v=aa end return aa.c end end do local function __modImpl()
 local aa={}
@@ -5032,839 +4725,391 @@ end
 
 return aa end function a.A():typeof(__modImpl())local aa=a.cache.A if not aa then aa={c=__modImpl()}a.cache.A=aa end return aa.c end end do local function __modImpl()
 
-local aa=(cloneref or clonereference or function(aa)
-return aa
-end)
+local aa=(cloneref or clonereference or function(aa)return aa end)
 
-local ab=aa(game:GetService"HttpService")
 
-local ac=a.c()
+local ab=aa(game:GetService"RunService")
+local ac=aa(game:GetService"HttpService")
 
-local ad={}
-ad.__index=ad
+local ad
 
-local ae={}
-ae.__index=ae
-
-local function DeepCopy(af)
-if typeof(af)~="table"then
-return af
-end
-
-local ag={}
-for ah,ai in next,af do
-ag[DeepCopy(ah)]=DeepCopy(ai)
-end
-return ag
-end
-
-local function SerializeValue(af)
-local ag=typeof(af)
-
-if af==nil or ag=="string"or ag=="number"or ag=="boolean"then
-return af
-end
-
-if ag=="Color3"then
+local ae
+ae={
+Folder=nil,
+Path=nil,
+Configs={},
+Parser={
+Colorpicker={
+Save=function(af)
 return{
-__kind="Color3",
-R=af.R,
-G=af.G,
-B=af.B,
+__type=af.__type,
+value=af.Default:ToHex(),
+transparency=af.Transparency or nil,
 }
+end,
+Load=function(af,ag)
+if af and af.Update then
+af:Update(Color3.fromHex(ag.value),ag.transparency or nil)
 end
-
-if ag=="Vector2"then
+end
+},
+Dropdown={
+Save=function(af)
 return{
-__kind="Vector2",
-X=af.X,
-Y=af.Y,
+__type=af.__type,
+value=af.Value,
 }
+end,
+Load=function(af,ag)
+if af and af.Select then
+af:Select(ag.value)
 end
-
-if ag=="Vector3"then
+end
+},
+Input={
+Save=function(af)
 return{
-__kind="Vector3",
-X=af.X,
-Y=af.Y,
-Z=af.Z,
+__type=af.__type,
+value=af.Value,
 }
+end,
+Load=function(af,ag)
+if af and af.Set then
+af:Set(ag.value)
 end
-
-if ag=="UDim"then
+end
+},
+Keybind={
+Save=function(af)
 return{
-__kind="UDim",
-Scale=af.Scale,
-Offset=af.Offset,
+__type=af.__type,
+value=af.Value,
 }
+end,
+Load=function(af,ag)
+if af and af.Set then
+af:Set(ag.value)
 end
-
-if ag=="UDim2"then
+end
+},
+Slider={
+Save=function(af)
 return{
-__kind="UDim2",
-X=SerializeValue(af.X),
-Y=SerializeValue(af.Y),
+__type=af.__type,
+value=af.Value.Default,
 }
+end,
+Load=function(af,ag)
+if af and af.Set then
+af:Set(tonumber(ag.value))
 end
-
-if ag=="EnumItem"then
+end
+},
+Toggle={
+Save=function(af)
 return{
-__kind="EnumItem",
-EnumType=af.EnumType.Name,
-Name=af.Name,
-}
-end
-
-if ag~="table"then
-return nil
-end
-
-local ah={}
-local ai=#af>0
-
-if ai then
-for aj,ak in ipairs(af)do
-ah[aj]=SerializeValue(ak)
-end
-return ah
-end
-
-for aj,ak in next,af do
-local al=typeof(aj)
-if al=="string"or al=="number"then
-ah[tostring(aj)]=SerializeValue(ak)
-end
-end
-
-return ah
-end
-
-local function DeserializeValue(af)
-if typeof(af)~="table"then
-return af
-end
-
-local ag=af.__kind
-if ag=="Color3"then
-return Color3.new(af.R or 0,af.G or 0,af.B or 0)
-end
-
-if ag=="Vector2"then
-return Vector2.new(af.X or 0,af.Y or 0)
-end
-
-if ag=="Vector3"then
-return Vector3.new(af.X or 0,af.Y or 0,af.Z or 0)
-end
-
-if ag=="UDim"then
-return UDim.new(af.Scale or 0,af.Offset or 0)
-end
-
-if ag=="UDim2"then
-return UDim2.new(
-(af.X and af.X.Scale)or 0,
-(af.X and af.X.Offset)or 0,
-(af.Y and af.Y.Scale)or 0,
-(af.Y and af.Y.Offset)or 0
-)
-end
-
-if ag=="EnumItem"then
-local ah=af.EnumType
-local ai=af.Name
-
-if ah and ai then
-local aj,ak=pcall(function()
-local aj=Enum[ah]
-return aj and aj[ai]or nil
-end)
-
-if aj and ak~=nil then
-return ak
-end
-end
-
-return nil
-end
-
-local ah={}
-for ai,aj in next,af do
-if ai~="__kind"then
-ah[ai]=DeserializeValue(aj)
-end
-end
-
-return ah
-end
-
-local function NormalizeConfigName(af)
-if af==nil then
-return nil
-end
-
-local ag=tostring(af)
-ag=ag:gsub("^%s+","")
-ag=ag:gsub("%s+$","")
-ag=ag:gsub("[\\/:*?\"<>|]","_")
-
-if ag==""then
-return nil
-end
-
-return ag
-end
-
-local function EnsureFolderPath(af)
-if type(makefolder)~="function"or type(isfolder)~="function"or typeof(af)~="string"or af==""then
-return
-end
-
-local ag=""
-for ah in string.gmatch(af,"[^/]+")do
-ag=ag==""and ah or(ag.."/"..ah)
-
-if not isfolder(ag)then
-pcall(makefolder,ag)
-end
-end
-end
-
-local function NormalizeSelectionValue(af)
-if typeof(af)=="table"then
-if af.Title~=nil then
-return af.Title
-end
-if af.Value~=nil then
-return af.Value
-end
-if af.Name~=nil then
-return af.Name
-end
-end
-
-return af
-end
-
-local function NormalizeSegmentedSelection(af)
-if af.Multi then
-local ag={}
-local ah={}
-
-if typeof(af.Value)=="table"then
-for ai,aj in ipairs(af.Value)do
-ah[tostring(aj)]=true
-end
-end
-
-for ai,aj in ipairs(af.Options or{})do
-if ah[tostring(aj.Value)]then
-table.insert(ag,aj.Title)
-end
-end
-
-return ag
-end
-
-local ag=af.Value
-for ah,ai in ipairs(af.Options or{})do
-if tostring(ai.Value)==tostring(ag)then
-return ai.Title
-end
-end
-
-return ag
-end
-
-local function CreateParserTable()
-local af={}
-
-af.Generic={
-Save=function(ag)
-local ah
-
-if typeof(ag.Get)=="function"then
-ah=ag:Get()
-elseif typeof(ag.GetValue)=="function"then
-ah=ag:GetValue()
-elseif ag.Value~=nil then
-ah=ag.Value
-elseif ag.Default~=nil then
-ah=ag.Default
-end
-
-return{
-__type="Generic",
-HasValue=ah~=nil,
-Value=SerializeValue(ah),
+__type=af.__type,
+value=af.Value,
 }
 end,
-Load=function(ag,ah)
-if typeof(ah)~="table"or ah.HasValue==false then
-return
+Load=function(af,ag)
+if af and af.Set then
+af:Set(ag.value)
 end
-
-local ai=DeserializeValue(ah.Value)
-
-if typeof(ag.Set)=="function"then
-ag:Set(ai)
-return
 end
-
-if typeof(ag.Update)=="function"then
-ag:Update(ai)
-return
-end
-
-if typeof(ag.Select)=="function"then
-ag:Select(ai)
-end
-end,
+},
+}
 }
 
-af.Toggle={
-Save=function(ag)
-return{
-__type="Toggle",
-Value=ag.Value==true,
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(ah.Value)
+function ae.Init(af,ag)
+if not ag.Folder then
+warn"[ WindUI.ConfigManager ] Window.Folder is not specified."
+return false
 end
-end,
-}
-
-af.ToggleKeybind={
-Save=function(ag)
-return{
-__type="ToggleKeybind",
-Value=ag.Value==true,
-Keybind=SerializeValue(ag.Keybind),
-}
-end,
-Load=function(ag,ah)
-if ah.Keybind~=nil and typeof(ag.SetKeybind)=="function"then
-ag:SetKeybind(DeserializeValue(ah.Keybind))
-end
-
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(ah.Value)
-end
-end,
-}
-
-af.Slider={
-Save=function(ag)
-local ah=ag.Value
-if typeof(ah)=="table"then
-ah=ah.Default
-end
-
-return{
-__type="Slider",
-Value=SerializeValue(ah),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Stepper={
-Save=function(ag)
-return{
-__type="Stepper",
-Value=SerializeValue(ag.Value),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Progress={
-Save=function(ag)
-return{
-__type="Progress",
-Value=SerializeValue(ag.Value),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Input={
-Save=function(ag)
-return{
-__type="Input",
-Value=SerializeValue(ag.Value),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Dropdown={
-Save=function(ag)
-local ah=ag.Value
-
-if ag.Multi then
-local ai={}
-if typeof(ah)=="table"then
-for aj,ak in ipairs(ah)do
-table.insert(ai,SerializeValue(NormalizeSelectionValue(ak)))
-end
-end
-
-return{
-__type="Dropdown",
-Multi=true,
-Value=ai,
-}
-end
-
-local ai=NormalizeSelectionValue(ah)
-
-return{
-__type="Dropdown",
-Multi=false,
-HasValue=ai~=nil,
-Value=SerializeValue(ai),
-}
-end,
-Load=function(ag,ah)
-if typeof(ag.Select)~="function"then
-return
-end
-
-if ah.Multi then
-local ai={}
-for aj,ak in ipairs(ah.Value or{})do
-table.insert(ai,DeserializeValue(ak))
-end
-
-ag:Select(ai)
-return
-end
-
-if ah.HasValue==false then
-ag:Select(nil)
-return
-end
-
-ag:Select(DeserializeValue(ah.Value))
-end,
-}
-
-af.Segmented={
-Save=function(ag)
-local ah=NormalizeSegmentedSelection(ag)
-
-return{
-__type="Segmented",
-Multi=ag.Multi==true,
-HasValue=ah~=nil,
-Value=SerializeValue(ah),
-}
-end,
-Load=function(ag,ah)
-if ag.Multi then
-if typeof(ag.Set)=="function"then
-ag:Set({},true)
-end
-
-for ai,aj in ipairs(ah.Value or{})do
-if typeof(ag.Select)=="function"then
-ag:Select(DeserializeValue(aj),true)
-end
-end
-
-if typeof(ag.Get)=="function"and typeof(ag.Set)=="function"then
-ag:Set(ag:Get())
-end
-return
-end
-
-if ah.HasValue==false then
-if typeof(ag.Set)=="function"then
-ag:Set(nil)
-end
-return
-end
-
-if typeof(ag.Select)=="function"then
-ag:Select(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Keybind={
-Save=function(ag)
-return{
-__type="Keybind",
-Value=SerializeValue(ag.Value),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.ButtonKeybind={
-Save=function(ag)
-return{
-__type="ButtonKeybind",
-Value=SerializeValue(ag.Value),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-af.Colorpicker={
-Save=function(ag)
-return{
-__type="Colorpicker",
-Color=SerializeValue(ag.Default),
-HasTransparency=typeof(ag.Transparency)=="number",
-Transparency=SerializeValue(ag.Transparency),
-}
-end,
-Load=function(ag,ah)
-local ai=DeserializeValue(ah.Color)
-local aj=ah.HasTransparency and DeserializeValue(ah.Transparency)or nil
-
-if ai and typeof(ag.Set)=="function"then
-ag:Set(ai,aj)
-elseif ai and typeof(ag.Update)=="function"then
-ag:Update(ai,aj)
-end
-
-if ai~=nil then
-ac.SafeCallback(ag.Callback,ai,aj)
-end
-end,
-}
-
-af.Stats={
-Save=function(ag)
-local ah
-
-if typeof(ag.GetItems)=="function"then
-ah=ag:GetItems()
-else
-ah=ag.Items
-end
-
-return{
-__type="Stats",
-Value=SerializeValue(ah),
-}
-end,
-Load=function(ag,ah)
-if ah.Value~=nil and typeof(ag.Set)=="function"then
-ag:Set(DeserializeValue(ah.Value))
-end
-end,
-}
-
-return af
-end
-
-function ad.CanUseFilesystem(af)
-return type(readfile)=="function"
-and type(writefile)=="function"
-and type(isfile)=="function"
-end
-
-function ad.ResolvePath(af,ag)
-local ah=NormalizeConfigName(ag)
-if not ah then
-return nil,nil
-end
-
-return ah,af.Path..ah..".json"
-end
-
-function ad.CreateConfig(af,ag)
-local ah,ai=af:ResolvePath(ag)
-if not ah then
-return nil
-end
-
-local aj=af.Configs[ah]
-if aj then
-return aj
-end
-
-local ak=setmetatable({
-Name=ah,
-Path=ai,
-Elements={},
-Manager=af,
-Window=af.Window,
-Data=nil,
-},ae)
-
-af.Configs[ah]=ak
-return ak
-end
-
-function ad.GetConfig(af,ag)
-return af:CreateConfig(ag)
-end
-
-function ad.ReadConfigData(af,ag)
-local ah,ai=af:ResolvePath(ag)
-if not ah or not ai then
-return false,"Invalid config name"
-end
-
-if not af:CanUseFilesystem()then
-return false,"Filesystem APIs are unavailable"
-end
-
-if not isfile(ai)then
-return false,"Config does not exist"
-end
-
-local aj,ak=pcall(readfile,ai)
-if not aj then
-return false,ak
-end
-
-local al,am=pcall(function()
-return ab:JSONDecode(ak)
-end)
-
-if not al then
-return false,am
-end
-
-if typeof(am)~="table"then
-return false,"Config data is not a table"
-end
-
-return true,am
-end
-
-function ad.AllConfigs(af)
-local ag={}
-
-for ah in next,af.Configs do
-ag[ah]=true
-end
-
-if af:CanUseFilesystem()and type(listfiles)=="function"then
-local ah,ai=pcall(listfiles,af.Path)
-if ah and typeof(ai)=="table"then
-for aj,ak in ipairs(ai)do
-local al=tostring(ak):gsub("\\","/")
-local am=al:match"([^/]+)%.json$"
-if am then
-ag[am]=true
-end
-end
-end
-end
-
-local ah={}
-for ai in next,ag do
-table.insert(ah,ai)
-end
-
-table.sort(ah,function(ai,aj)
-return string.lower(ai)<string.lower(aj)
-end)
-
-for ai,aj in ipairs(ah)do
-af:CreateConfig(aj)
-end
-
-return ah
-end
-
-function ad.DeleteConfig(af,ag)
-local ah=af:GetConfig(ag)
-if not ah then
-return false,"Invalid config name"
+if ab:IsStudio()or not writefile then
+warn"[ WindUI.ConfigManager ] The config system doesn't work in the studio."
+return false
 end
 
-return ah:Delete()
-end
-
-function ad.Save(af,ag)
-local ah=af:GetConfig(ag)
-if not ah then
-return false,"Invalid config name"
-end
-
-return ah:Save()
-end
-
-function ad.Load(af,ag)
-local ah=af:GetConfig(ag)
-if not ah then
-return false,"Invalid config name"
-end
-
-return ah:Load()
-end
-
-function ae.Register(af,ag,ah)
-if typeof(ag)~="string"then
-return
-end
-
-af.Elements[ag]=ah
-end
-
-function ae.Unregister(af,ag)
-if typeof(ag)~="string"then
-return
-end
-
-af.Elements[ag]=nil
-end
-
-function ae.Serialize(af)
-local ag={}
-local ah={}
+ad=ag
+ae.Folder=ad.Folder
+ae.Path="WindUI/"..tostring(ae.Folder).."/config/"
 
-for ai,aj in next,af.Window.FlagIndex or{}do
-if typeof(ai)=="string"and typeof(aj)=="table"then
-local ak=aj.__type
-local al=af.Manager.Parser[ak]or af.Manager.Parser.Generic
-
-if al and al.Save then
-local am,an=pcall(al.Save,aj)
-if am and typeof(an)=="table"then
-ag[ai]=an
-else
-ah[ai]=am and"Parser returned invalid data"or tostring(an)
-end
-else
-ah[ai]="No parser available"
-end
-end
-end
-
-return ag,ah
-end
-
-function ae.Save(af)
-local ag,ah=af:Serialize()
-
-af.Window.PendingConfigData={}
-af.Window:SetCurrentConfig(af)
-
-af.Data=DeepCopy(ag)
-af.Window.PendingConfigData=DeepCopy(ag)
-
-if af.Manager:CanUseFilesystem()then
-EnsureFolderPath(af.Manager.Path)
-
-local ai,aj=pcall(function()
-return ab:JSONEncode(ag)
-end)
-
-if not ai then
-return false,aj
+if not isfolder(ae.Path)then
+makefolder(ae.Path)
 end
 
-local ak,al=pcall(writefile,af.Path,aj)
-if not ak then
-return false,al
-end
-end
+local ah=ae:AllConfigs()
 
-return true,ag,ah
+for ai,aj in next,ah do
+local ak=ae.Path..aj..".json"
+if isfile and readfile and isfile(ak)then
+ae.Configs[aj]=readfile(ak)
 end
-
-function ae.Read(af)
-local ag,ah=af.Manager:ReadConfigData(af.Name)
-if ag then
-af.Data=DeepCopy(ah)
-return true,ah
-end
-
-if typeof(af.Data)=="table"then
-return true,DeepCopy(af.Data)
 end
 
-return false,ah
+return ae
 end
 
-function ae.Load(af)
-local ag,ah=af:Read()
+function ae.SetPath(af,ag)
 if not ag then
-return false,ah
+warn"[ WindUI.ConfigManager ] Custom path is not specified."
+return false
 end
 
-af.Data=DeepCopy(ah)
-af.Window.PendingConfigData=DeepCopy(ah)
-af.Window:SetCurrentConfig(af)
-
-return true,DeepCopy(ah)
+ae.Path=ag
+if not ag:match"/$"then
+ae.Path=ag.."/"
 end
 
-function ae.Delete(af)
-af.Data=nil
-
-if af.Window.CurrentConfig==af then
-af.Window.PendingConfigData={}
-af.Window:SetCurrentConfig(nil)
-end
-
-af.Manager.Configs[af.Name]=nil
-
-if af.Manager:CanUseFilesystem()and type(delfile)=="function"and isfile(af.Path)then
-local ag,ah=pcall(delfile,af.Path)
-if not ag then
-return false,ah
-end
+if not isfolder(ae.Path)then
+makefolder(ae.Path)
 end
 
 return true
 end
 
-function ad.Init(af,ag)
-local ah=ag and ag.Folder
-local ai="WindUI/"..tostring(ah or"Default").."/config/"
-
-EnsureFolderPath(ai)
-
-local aj=setmetatable({
-Window=ag,
-Folder=ah,
-Path=ai,
-Configs={},
-Parser=CreateParserTable(),
-},ad)
-
-aj:AllConfigs()
-
-return aj
+function ae.CreateConfig(af,ag,ah)
+if not ag then
+return false,"No config file is selected"
 end
 
-return ad end function a.B():typeof(__modImpl())local aa=a.cache.B if not aa then aa={c=__modImpl()}a.cache.B=aa end return aa.c end end do local function __modImpl()
+local ai={
+Path=ae.Path..ag..".json",
+Elements={},
+CustomData={},
+AutoLoad=ah or false,
+Version=1.2,
+}
+
+function ai.SetAsCurrent(aj)
+ad:SetCurrentConfig(ai)
+end
+
+function ai.Register(aj,ak,al)
+ai.Elements[ak]=al
+end
+
+function ai.Unregister(aj,ak)
+ai.Elements[ak]=nil
+end
+
+function ai.Set(aj,ak,al)
+ai.CustomData[ak]=al
+end
+
+function ai.Get(aj,ak)
+return ai.CustomData[ak]
+end
+
+function ai.SetAutoLoad(aj,ak)
+ai.AutoLoad=ak
+end
+
+function ai.Save(aj)
+if ad.PendingFlags then
+for ak,al in next,ad.PendingFlags do
+ai:Register(ak,al)
+end
+end
+
+local ak={
+__version=ai.Version,
+__elements={},
+__autoload=ai.AutoLoad,
+__custom=ai.CustomData
+}
+
+for al,am in next,ai.Elements do
+if ae.Parser[am.__type]then
+ak.__elements[tostring(al)]=ae.Parser[am.__type].Save(am)
+end
+end
+
+local al=ac:JSONEncode(ak)
+if writefile then
+writefile(ai.Path,al)
+end
+
+return ak
+end
+
+function ai.Load(aj)
+if isfile and not isfile(ai.Path)then
+return false,"Config file does not exist"
+end
+
+local ak,al=pcall(function()
+local ak=readfile or function()
+warn"[ WindUI.ConfigManager ] The config system doesn't work in the studio."
+return nil
+end
+return ac:JSONDecode(ak(ai.Path))
+end)
+
+if not ak then
+return false,"Failed to parse config file"
+end
+
+if not al.__version then
+local am={
+__version=ai.Version,
+__elements=al,
+__custom={}
+}
+al=am
+end
+
+if ad.PendingFlags then
+for am,an in next,ad.PendingFlags do
+ai:Register(am,an)
+end
+end
+
+for am,an in next,(al.__elements or{})do
+if ai.Elements[am]and ae.Parser[an.__type]then
+task.spawn(function()
+ae.Parser[an.__type].Load(ai.Elements[am],an)
+end)
+end
+end
+
+ai.CustomData=al.__custom or{}
+
+return ai.CustomData
+end
+
+function ai.Delete(aj)
+if not delfile then
+return false,"delfile function is not available"
+end
+
+if not isfile(ai.Path)then
+return false,"Config file does not exist"
+end
+
+local ak,al=pcall(function()
+delfile(ai.Path)
+end)
+
+if not ak then
+return false,"Failed to delete config file: "..tostring(al)
+end
+
+ae.Configs[ag]=nil
+
+if ad.CurrentConfig==ai then
+ad.CurrentConfig=nil
+end
+
+return true,"Config deleted successfully"
+end
+
+function ai.GetData(aj)
+return{
+elements=ai.Elements,
+custom=ai.CustomData,
+autoload=ai.AutoLoad
+}
+end
+
+
+if isfile(ai.Path)then
+local aj,ak=pcall(function()
+return ac:JSONDecode(readfile(ai.Path))
+end)
+
+if aj and ak and ak.__autoload then
+ai.AutoLoad=true
+
+task.spawn(function()
+task.wait(0.5)
+local al,am=pcall(function()
+return ai:Load()
+end)
+if al then
+if ad.Debug then print("[ WindUI.ConfigManager ] AutoLoaded config: "..ag)end
+else
+warn("[ WindUI.ConfigManager ] Failed to AutoLoad config: "..ag.." - "..tostring(am))
+end
+end)
+end
+end
+
+
+ai:SetAsCurrent()
+ae.Configs[ag]=ai
+return ai
+end
+
+function ae.Config(af,ag,ah)
+return ae:CreateConfig(ag,ah)
+end
+
+function ae.GetAutoLoadConfigs(af)
+local ag={}
+
+for ah,ai in pairs(ae.Configs)do
+if ai.AutoLoad then
+table.insert(ag,ah)
+end
+end
+
+return ag
+end
+
+function ae.DeleteConfig(af,ag)
+if not delfile then
+return false,"delfile function is not available"
+end
+
+local ah=ae.Path..ag..".json"
+
+if not isfile(ah)then
+return false,"Config file does not exist"
+end
+
+local ai,aj=pcall(function()
+delfile(ah)
+end)
+
+if not ai then
+return false,"Failed to delete config file: "..tostring(aj)
+end
+
+ae.Configs[ag]=nil
+
+if ad.CurrentConfig and ad.CurrentConfig.Path==ah then
+ad.CurrentConfig=nil
+end
+
+return true,"Config deleted successfully"
+end
+
+function ae.AllConfigs(af)
+if not listfiles then return{}end
+
+local ag={}
+if not isfolder(ae.Path)then
+makefolder(ae.Path)
+return ag
+end
+
+for ah,ai in next,listfiles(ae.Path)do
+local aj=ai:match"([^\\/]+)%.json$"
+if aj then
+table.insert(ag,aj)
+end
+end
+
+return ag
+end
+
+function ae.GetConfig(af,ag)
+return ae.Configs[ag]
+end
+
+return ae end function a.B():typeof(__modImpl())local aa=a.cache.B if not aa then aa={c=__modImpl()}a.cache.B=aa end return aa.c end end do local function __modImpl()
 
 local aa={}
 
@@ -7098,7 +6343,7 @@ local ab=aa.New
 
 local ac={}
 
-local ad=a.e().New
+local ad=a.l().New
 
 function ac.New(ae,af)
 af.Hover=false
@@ -9181,7 +8426,7 @@ aa.Tween
 local ad={
 UICorner=8,
 UIPadding=8,
-}local ae=a.e()
+}local ae=a.l()
 
 
 .New
@@ -11484,7 +10729,7 @@ local al=ai.RenderStepped
 local am=ak.LocalPlayer
 local an=am:GetMouse()
 
-local ao=a.e().New
+local ao=a.l().New
 local ap=a.m().New
 
 local aq={
@@ -14561,7 +13806,7 @@ ag.Window.Folder,
 "Image",
 false
 )
-if ak and ak.Parent then
+if ak then
 ak.Parent=ag.Parent
 ak.Size=UDim2.new(1,0,0,0)
 ak.BackgroundTransparency=1
@@ -14598,6 +13843,7 @@ return ai.__type,ai
 end
 
 return ae end function a.aa():typeof(__modImpl())local aa=a.cache.aa if not aa then aa={c=__modImpl()}a.cache.aa=aa end return aa.c end end do local function __modImpl()
+
 local aa=a.c()
 local ad=aa.New
 
@@ -15713,7 +14959,7 @@ local ae=ad.New
 local af=ad.Tween
 
 local ag=a.v().New
-local ai=a.e().New
+local ai=a.l().New
 local ak=a.x()
 local al=a.y()
 local am=a.ad()
@@ -16692,7 +15938,7 @@ end
 
 
 local am=a.v().New
-local an=a.e().New
+local an=a.l().New
 local ao=a.w().New
 local ap=a.x()
 local aq=a.y()
@@ -19325,7 +18571,7 @@ Window=nil,
 Theme=nil,
 Creator=a.c(),
 LocalizationModule=a.d(),
-NotificationModule=a.f(),
+NotificationModule=a.e(),
 Themes=nil,
 Transparent=false,
 
@@ -19336,7 +18582,7 @@ UIScale=1,
 ConfigManager=nil,
 Version="0.0.0",
 
-Services=a.k(),
+Services=a.j(),
 
 OnThemeChangeFunction=nil,
 
@@ -19357,7 +18603,7 @@ local ai=ad(game:GetService"RunService")
 
 local ak=af.LocalPlayer or nil
 
-local al=ae:JSONDecode(a.l())
+local al=ae:JSONDecode(a.k())
 if al then
 aa.Version=al.version
 end
@@ -19446,7 +18692,7 @@ if aa.TooltipGui then
 aa.TooltipGui.Parent=au
 end
 end
-math.clamp(aa.TransparencyValue,0,1)
+aa.TransparencyValue=math.clamp(aa.TransparencyValue,0,1)
 
 local at=aa.NotificationModule.Init(aa.NotificationGui)
 
@@ -19551,6 +18797,10 @@ table.sort(ay,function(az,aA)
 return az.Time<aA.Time
 end)
 
+if#ax==0 then
+error"Gradient requires at least one stop"
+end
+
 if#ax<2 then
 table.insert(ax,ColorSequenceKeypoint.new(1,ax[1].Value))
 table.insert(ay,NumberSequenceKeypoint.new(1,ay[1].Value))
@@ -19584,15 +18834,14 @@ aa:SetLanguage(an.Language)
 
 function aa.CreateWindow(au,av)
 local aw=a.ai()
+local ax=av.Folder or av.Title or"Temp"
 
 if not ai:IsStudio()and writefile then
 if not isfolder"WindUI"then
 makefolder"WindUI"
 end
-if av.Folder then
-makefolder(av.Folder)
-else
-makefolder(av.Title)
+if not isfolder(ax)then
+makefolder(ax)
 end
 end
 
@@ -19604,37 +18853,46 @@ warn"You cannot create more than one window"
 return
 end
 
-local ax=true
+local ay=true
 
-local ay=aa.Themes[av.Theme or"Dark"]
+local az=aa.Themes[av.Theme or"Dark"]or aa.Themes.Dark
+
+if av.Theme and not aa.Themes[av.Theme]then
+warn("[ WindUI ] Unknown theme '"..tostring(av.Theme).."', falling back to Dark")
+end
 
 
-an.SetTheme(ay)
+an.SetTheme(az)
 
-local az=gethwid or function()
+local aA=gethwid or function()
 return af.LocalPlayer.UserId
 end
 
-local aA=az()
+local aB=aA()
 
 if av.KeySystem then
-ax=false
+ay=false
+local aC=av.Folder or"Temp"
 
 local function loadKeysystem()
-am.new(av,aA,function(aB)
-ax=aB
+am.new(av,aB,function(b)
+ay=b
 end)
 end
 
-local aB=(av.Folder or"Temp").."/"..aA..".key"
+if not ai:IsStudio()and writefile and not isfolder(aC)then
+makefolder(aC)
+end
+
+local b=aC.."/"..aB..".key"
 
 if av.KeySystem.KeyValidator then
-if av.KeySystem.SaveKey and isfile(aB)then
-local aC=readfile(aB)
-local b=av.KeySystem.KeyValidator(aC)
+if av.KeySystem.SaveKey and isfile(b)then
+local d=readfile(b)
+local f=av.KeySystem.KeyValidator(d)
 
-if b then
-ax=true
+if f then
+ay=true
 else
 loadKeysystem()
 end
@@ -19642,13 +18900,13 @@ else
 loadKeysystem()
 end
 elseif not av.KeySystem.API then
-if av.KeySystem.SaveKey and isfile(aB)then
-local aC=readfile(aB)
-local b=(type(av.KeySystem.Key)=="table")and table.find(av.KeySystem.Key,aC)
-or tostring(av.KeySystem.Key)==tostring(aC)
+if av.KeySystem.SaveKey and isfile(b)then
+local d=readfile(b)
+local f=(type(av.KeySystem.Key)=="table")and table.find(av.KeySystem.Key,d)
+or tostring(av.KeySystem.Key)==tostring(d)
 
-if b then
-ax=true
+if f then
+ay=true
 else
 loadKeysystem()
 end
@@ -19656,29 +18914,29 @@ else
 loadKeysystem()
 end
 else
-if isfile(aB)then
-local aC=readfile(aB)
-local b=false
+if isfile(b)then
+local d=readfile(b)
+local f=false
 
-for d,f in next,av.KeySystem.API do
-local g=aa.Services[f.Type]
-if g then
-local h={}
-for j,l in next,g.Args do
-table.insert(h,f[l])
+for g,h in next,av.KeySystem.API do
+local j=aa.Services[h.Type]
+if j then
+local l={}
+for m,p in next,j.Args do
+table.insert(l,h[p])
 end
 
-local j=g.New(table.unpack(h))
-local l=j.Verify(aC)
-if l then
-b=true
+local m=j.New(table.unpack(l))
+local p=m.Verify(d)
+if p then
+f=true
 break
 end
 end
 end
 
-ax=b
-if not b then
+ay=f
+if not f then
 loadKeysystem()
 end
 else
@@ -19688,13 +18946,13 @@ end
 
 repeat
 task.wait()
-until ax
+until ay
 end
 
-local aB=aw(av)
+local aC=aw(av)
 
 aa.Transparent=av.Transparent
-aa.Window=aB
+aa.Window=aC
 
 if av.Acrylic then
 ap.init()
@@ -19712,7 +18970,7 @@ end
 
 
 
-return aB
+return aC
 end
 
 return aa
