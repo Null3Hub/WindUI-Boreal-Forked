@@ -3933,9 +3933,168 @@ Button=aa:Gradient({
 
 Icon=Color3.fromHex"#ffffff",
 },
-Moon={Name="Moon",Accent=aa:Gradient({["0"]={Color=Color3.fromHex"#6667AB",Transparency=0},["100"]={Color=Color3.fromHex"#7B337E",Transparency=0}}),Background=aa:Gradient({["0"]={Color=Color3.fromHex"#210635",Transparency=0},["100"]={Color=Color3.fromHex"#420D4B",Transparency=0}}),Outline=Color3.fromHex"#7B337E",Text=Color3.fromHex"#F5D5E0",Placeholder=Color3.fromHex"#F5D5E0",Button=aa:Gradient({["0"]={Color=Color3.fromHex"#7B337E",Transparency=0},["100"]={Color=Color3.fromHex"#420D4B",Transparency=0}}),Icon=Color3.fromHex"#F5D5E0",Hover=Color3.fromHex"#F5D5E0",WindowBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#210635",Transparency=0},["100"]={Color=Color3.fromHex"#420D4B",Transparency=0}}),WindowShadow=Color3.fromHex"#000000",TabBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#420D4B",Transparency=0},["100"]={Color=Color3.fromHex"#210635",Transparency=0}}),TabTitle=Color3.fromHex"#F5D5E0",TabIcon=Color3.fromHex"#6667AB",ElementBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#420D4B",Transparency=0},["100"]={Color=Color3.fromHex"#210635",Transparency=0}}),ElementTitle=Color3.fromHex"#F5D5E0",ElementDesc=Color3.fromHex"#B08BB4",ElementIcon=Color3.fromHex"#F5D5E0",Toggle=Color3.fromHex"#7B337E",ToggleBar=Color3.fromHex"#F5D5E0",Checkbox=Color3.fromHex"#7B337E",CheckboxIcon=Color3.fromHex"#F5D5E0",Slider=Color3.fromHex"#7B337E",SliderThumb=Color3.fromHex"#F5D5E0",PopupBackground=Color3.fromHex"#210635",PopupTitle=Color3.fromHex"#F5D5E0",PopupContent=Color3.fromHex"#F5D5E0",PopupIcon=Color3.fromHex"#6667AB",TagGradient=aa:Gradient({["0"]={Color=Color3.fromHex"#580C4A",Transparency=0},["50"]={Color=Color3.fromHex"#6A47C7",Transparency=0},["100"]={Color=Color3.fromHex"#E68CAF",Transparency=0}},{Rotation=0})},
-Grey={Name="Grey",Accent=aa:Gradient({["0"]={Color=Color3.fromHex"#E0E0E0",Transparency=0},["100"]={Color=Color3.fromHex"#BFBFBF",Transparency=0}}),Background=aa:Gradient({["0"]={Color=Color3.fromHex"#1A1A1A",Transparency=0},["100"]={Color=Color3.fromHex"#222526",Transparency=0}}),Outline=Color3.fromHex"#353A3E",Text=Color3.fromHex"#E0E0E0",Placeholder=Color3.fromHex"#BFBFBF",Button=aa:Gradient({["0"]={Color=Color3.fromHex"#353A3E",Transparency=0},["100"]={Color=Color3.fromHex"#222526",Transparency=0}}),Icon=Color3.fromHex"#E0E0E0",Hover=Color3.fromHex"#BFBFBF",WindowBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#222526",Transparency=0},["100"]={Color=Color3.fromHex"#353A3E",Transparency=0}}),WindowShadow=Color3.fromHex"#000000",TabBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#353A3E",Transparency=0},["100"]={Color=Color3.fromHex"#222526",Transparency=0}}),TabTitle=Color3.fromHex"#E0E0E0",TabIcon=Color3.fromHex"#BFBFBF",ElementBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#353A3E",Transparency=0},["100"]={Color=Color3.fromHex"#222526",Transparency=0}}),ElementTitle=Color3.fromHex"#E0E0E0",ElementDesc=Color3.fromHex"#BFBFBF",ElementIcon=Color3.fromHex"#BFBFBF",Toggle=Color3.fromHex"#E0E0E0",ToggleBar=Color3.fromHex"#353A3E",Checkbox=Color3.fromHex"#E0E0E0",CheckboxIcon=Color3.fromHex"#1A1A1A",Slider=Color3.fromHex"#353A3E",SliderThumb=Color3.fromHex"#E0E0E0",PopupBackground=Color3.fromHex"#222526",PopupTitle=Color3.fromHex"#E0E0E0",PopupContent=Color3.fromHex"#E0E0E0",PopupIcon=Color3.fromHex"#BFBFBF",TagGradient=aa:Gradient({["0"]={Color=Color3.fromHex"#1A1A1A",Transparency=0},["50"]={Color=Color3.fromHex"#353A3E",Transparency=0},["100"]={Color=Color3.fromHex"#E0E0E0",Transparency=0}},{Rotation=0})},
-Midnight={Name="Midnight",Accent=aa:Gradient({["0"]={Color=Color3.fromHex"#D4A574",Transparency=0},["100"]={Color=Color3.fromHex"#C9A961",Transparency=0}}),Background=aa:Gradient({["0"]={Color=Color3.fromHex"#212842",Transparency=0},["100"]={Color=Color3.fromHex"#2A3350",Transparency=0}}),Outline=Color3.fromHex"#D4A574",Text=Color3.fromHex"#F0E7D5",Placeholder=Color3.fromHex"#B8B0A0",Button=aa:Gradient({["0"]={Color=Color3.fromHex"#D4A574",Transparency=0},["100"]={Color=Color3.fromHex"#B8956A",Transparency=0}}),Icon=Color3.fromHex"#F0E7D5",Hover=Color3.fromHex"#D4A574",WindowBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#212842",Transparency=0},["100"]={Color=Color3.fromHex"#2A3350",Transparency=0}}),WindowShadow=Color3.fromHex"#000000",TabBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#2A3350",Transparency=0},["100"]={Color=Color3.fromHex"#212842",Transparency=0}}),TabTitle=Color3.fromHex"#F0E7D5",TabIcon=Color3.fromHex"#D4A574",ElementBackground=aa:Gradient({["0"]={Color=Color3.fromHex"#2A3350",Transparency=0},["100"]={Color=Color3.fromHex"#212842",Transparency=0}}),ElementTitle=Color3.fromHex"#F0E7D5",ElementDesc=Color3.fromHex"#B8B0A0",ElementIcon=Color3.fromHex"#D4A574",Toggle=Color3.fromHex"#D4A574",ToggleBar=Color3.fromHex"#F0E7D5",Checkbox=Color3.fromHex"#D4A574",CheckboxIcon=Color3.fromHex"#F0E7D5",Slider=Color3.fromHex"#D4A574",SliderThumb=Color3.fromHex"#F0E7D5",PopupBackground=Color3.fromHex"#212842",PopupTitle=Color3.fromHex"#F0E7D5",PopupContent=Color3.fromHex"#F0E7D5",PopupIcon=Color3.fromHex"#D4A574",TagGradient=aa:Gradient({["0"]={Color=Color3.fromHex"#212842",Transparency=0},["50"]={Color=Color3.fromHex"#D4A574",Transparency=0},["100"]={Color=Color3.fromHex"#F0E7D5",Transparency=0}},{Rotation=0})}
+Moon = {
+    Name = "Moon",
+    Accent = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#6667AB"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#7B337E"), Transparency = 0 },
+    }),
+    Background = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#210635"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#420D4B"), Transparency = 0 },
+    }),
+    Outline = Color3.fromHex("#7B337E"),
+    Text = Color3.fromHex("#F5D5E0"),
+    Placeholder = Color3.fromHex("#F5D5E0"),
+    Button = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#7B337E"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#420D4B"), Transparency = 0 },
+    }),
+    Icon = Color3.fromHex("#F5D5E0"),
+    Hover = Color3.fromHex("#F5D5E0"),
+    WindowBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#210635"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#420D4B"), Transparency = 0 },
+    }),
+    WindowShadow = Color3.fromHex("#000000"),
+    TabBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#420D4B"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#210635"), Transparency = 0 },
+    }),
+    TabTitle = Color3.fromHex("#F5D5E0"),
+    TabIcon = Color3.fromHex("#6667AB"),
+    ElementBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#420D4B"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#210635"), Transparency = 0 },
+    }),
+    ElementTitle = Color3.fromHex("#F5D5E0"),
+    ElementDesc = Color3.fromHex("#B08BB4"),
+    ElementIcon = Color3.fromHex("#F5D5E0"),
+    Toggle = Color3.fromHex("#7B337E"),
+    ToggleBar = Color3.fromHex("#F5D5E0"),
+    Checkbox = Color3.fromHex("#7B337E"),
+    CheckboxIcon = Color3.fromHex("#F5D5E0"),
+    Slider = Color3.fromHex("#7B337E"),
+    SliderThumb = Color3.fromHex("#F5D5E0"),
+    PopupBackground = Color3.fromHex("#210635"),
+    PopupTitle = Color3.fromHex("#F5D5E0"),
+    PopupContent = Color3.fromHex("#F5D5E0"),
+    PopupIcon = Color3.fromHex("#6667AB"),
+    -- Cor específica para as Tags
+    TagGradient = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#580C4A"), Transparency = 0 },
+        ["50"] = { Color = Color3.fromHex("#6A47C7"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#E68CAF"), Transparency = 0 },
+    }, { Rotation = 0 }),
+},
+Grey = {
+    Name = "Grey",
+    Accent = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#E0E0E0"), Transparency = 0 }, -- Platinum
+        ["100"] = { Color = Color3.fromHex("#BFBFBF"), Transparency = 0 }, -- Ash
+    }),
+    Background = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#1A1A1A"), Transparency = 0 }, -- Jet Black
+        ["100"] = { Color = Color3.fromHex("#222526"), Transparency = 0 }, -- Onyx
+    }),
+    Outline = Color3.fromHex("#353A3E"), -- Graphite
+    Text = Color3.fromHex("#E0E0E0"), -- Platinum
+    Placeholder = Color3.fromHex("#BFBFBF"), -- Ash
+    Button = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#353A3E"), Transparency = 0 }, -- Graphite
+        ["100"] = { Color = Color3.fromHex("#222526"), Transparency = 0 }, -- Onyx
+    }),
+    Icon = Color3.fromHex("#E0E0E0"), -- Platinum
+    Hover = Color3.fromHex("#BFBFBF"), -- Ash
+    WindowBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#222526"), Transparency = 0 }, -- Onyx
+        ["100"] = { Color = Color3.fromHex("#353A3E"), Transparency = 0 }, -- Graphite
+    }),
+    WindowShadow = Color3.fromHex("#000000"),
+    TabBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#353A3E"), Transparency = 0 }, -- Graphite
+        ["100"] = { Color = Color3.fromHex("#222526"), Transparency = 0 }, -- Onyx
+    }),
+    TabTitle = Color3.fromHex("#E0E0E0"), -- Platinum
+    TabIcon = Color3.fromHex("#BFBFBF"), -- Ash
+    ElementBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#353A3E"), Transparency = 0 }, -- Graphite
+        ["100"] = { Color = Color3.fromHex("#222526"), Transparency = 0 }, -- Onyx
+    }),
+    ElementTitle = Color3.fromHex("#E0E0E0"), -- Platinum
+    ElementDesc = Color3.fromHex("#BFBFBF"), -- Ash
+    ElementIcon = Color3.fromHex("#BFBFBF"), -- Ash
+    Toggle = Color3.fromHex("#E0E0E0"), -- Platinum
+    ToggleBar = Color3.fromHex("#353A3E"), -- Graphite
+    Checkbox = Color3.fromHex("#E0E0E0"), -- Platinum
+    CheckboxIcon = Color3.fromHex("#1A1A1A"), -- Jet Black
+    Slider = Color3.fromHex("#353A3E"), -- Graphite
+    SliderThumb = Color3.fromHex("#E0E0E0"), -- Platinum
+    PopupBackground = Color3.fromHex("#222526"), -- Onyx
+    PopupTitle = Color3.fromHex("#E0E0E0"), -- Platinum
+    PopupContent = Color3.fromHex("#E0E0E0"), -- Platinum
+    PopupIcon = Color3.fromHex("#BFBFBF"), -- Ash
+    -- Cor específica para as Tags
+    TagGradient = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#1A1A1A"), Transparency = 0 },
+        ["50"] = { Color = Color3.fromHex("#353A3E"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#E0E0E0"), Transparency = 0 },
+    }, { Rotation = 0 }),
+},
+Midnight = {
+    Name = "Midnight",
+    Accent = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#D4A574"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#C9A961"), Transparency = 0 },
+    }),
+    Background = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#212842"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#2A3350"), Transparency = 0 },
+    }),
+    Outline = Color3.fromHex("#D4A574"),
+    Text = Color3.fromHex("#F0E7D5"),
+    Placeholder = Color3.fromHex("#B8B0A0"),
+    Button = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#D4A574"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#B8956A"), Transparency = 0 },
+    }),
+    Icon = Color3.fromHex("#F0E7D5"),
+    Hover = Color3.fromHex("#D4A574"),
+    WindowBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#212842"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#2A3350"), Transparency = 0 },
+    }),
+    WindowShadow = Color3.fromHex("#000000"),
+    TabBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#2A3350"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#212842"), Transparency = 0 },
+    }),
+    TabTitle = Color3.fromHex("#F0E7D5"),
+    TabIcon = Color3.fromHex("#D4A574"),
+    ElementBackground = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#2A3350"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#212842"), Transparency = 0 },
+    }),
+    ElementTitle = Color3.fromHex("#F0E7D5"),
+    ElementDesc = Color3.fromHex("#B8B0A0"),
+    ElementIcon = Color3.fromHex("#D4A574"),
+    Toggle = Color3.fromHex("#D4A574"),
+    ToggleBar = Color3.fromHex("#F0E7D5"),
+    Checkbox = Color3.fromHex("#D4A574"),
+    CheckboxIcon = Color3.fromHex("#F0E7D5"),
+    Slider = Color3.fromHex("#D4A574"),
+    SliderThumb = Color3.fromHex("#F0E7D5"),
+    PopupBackground = Color3.fromHex("#212842"),
+    PopupTitle = Color3.fromHex("#F0E7D5"),
+    PopupContent = Color3.fromHex("#F0E7D5"),
+    PopupIcon = Color3.fromHex("#D4A574"),
+    -- Cor específica para as Tags
+    TagGradient = aa:Gradient({
+        ["0"] = { Color = Color3.fromHex("#212842"), Transparency = 0 },
+        ["50"] = { Color = Color3.fromHex("#D4A574"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#F0E7D5"), Transparency = 0 },
+    }, { Rotation = 0 }),
+},
 }
 end end function a.u():typeof(__modImpl())local aa=a.cache.u if not aa then aa={c=__modImpl()}a.cache.u=aa end return aa.c end end do local function __modImpl()
 
